@@ -2,10 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <!-- PERMISII -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-
 
     <application
         android:allowBackup="true"
@@ -28,7 +28,6 @@
             </intent-filter>
         </activity>
 
-        <!-- urmează să fie implementată -->
         <activity
             android:name=".auth.LoginActivity"
             android:exported="false" />
@@ -36,7 +35,6 @@
         <activity
             android:name=".main.MainActivity"
             android:exported="false" />
-
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"

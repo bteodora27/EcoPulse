@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="12dp"
+    android:layout_marginTop="10dp"
+    android:background="#FFFFFF"
+    android:elevation="3dp"
+    android:gravity="center_vertical">
+
+    <!-- Reward image -->
+    <ImageView
+        android:id="@+id/reward_image"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:scaleType="centerCrop"
+        android:background="#DDDDDD"
+        android:layout_marginEnd="12dp" />
+
+    <!-- TEXT CONTENT -->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tv_reward_partner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Nume Partener"
+            android:textSize="13sp"
+            android:textColor="#777777" />
+
+        <TextView
+            android:id="@+id/tv_reward_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Titlu Reward"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            android:textColor="#111111"
+            android:paddingTop="2dp" />
+
+        <TextView
+            android:id="@+id/tv_reward_expires"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Valabil până la..."
+            android:textSize="12sp"
+            android:textColor="#AAAAAA"
+            android:paddingTop="2dp" />
+    </LinearLayout>
+
+    <!-- POINTS -->
+    <TextView
+        android:id="@+id/tv_reward_points"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="500 Puncte"
+        android:textStyle="bold"
+        android:textColor="#3bbf3f"
+        android:padding="8dp"
+        android:background="#203bbf3f"
+        android:layout_marginStart="8dp" />
+
+</LinearLayout>

@@ -7,6 +7,8 @@ import androidx.fragment.app.Fragment
 import com.example.ecopulse.R
 import com.example.ecopulse.events.EventsFragment
 import com.example.ecopulse.map.HartaFragment
+import com.example.ecopulse.profile.ProfileFragment
+import com.example.ecopulse.rewards.RewardsFragment
 
 
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -43,12 +45,12 @@ class MainActivity : AppCompatActivity() {
                     selectedFragment = HartaFragment()
                 }
                 R.id.nav_profile -> {
-                    // TODO: Creează și încarcă ProfileFragment
-                    // selectedFragment = ProfileFragment()
+
+                    selectedFragment = ProfileFragment()
                 }
                 R.id.nav_rewards -> {
                     // TODO: Creează și încarcă RewardsFragment
-                    // selectedFragment = RewardsFragment()
+                    selectedFragment = RewardsFragment()
                 }
             }
 
