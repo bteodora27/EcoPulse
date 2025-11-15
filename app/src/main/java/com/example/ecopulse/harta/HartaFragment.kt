@@ -21,6 +21,7 @@ import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+import android.content.Intent // nou
 
 class HartaFragment : Fragment(), OnMapReadyCallback {
 
@@ -29,6 +30,8 @@ class HartaFragment : Fragment(), OnMapReadyCallback {
     private lateinit var bottomSheetTitle: TextView
     private lateinit var bottomSheetDescription: TextView
     private lateinit var btnStartCleanup: MaterialButton
+
+    private var selectedPin: MapPin? = null
 
     // Date model simple (le vei lua din baza de date)
     data class MapPin(
@@ -82,6 +85,7 @@ class HartaFragment : Fragment(), OnMapReadyCallback {
         map.setOnMarkerClickListener { marker ->
             val pin = marker.tag as? MapPin
             if (pin != null) {
+                selectedPin = pin // Salvează pin-ul selectat
                 updateBottomSheet(pin)
                 bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
             }
@@ -90,6 +94,7 @@ class HartaFragment : Fragment(), OnMapReadyCallback {
 
         map.setOnMapClickListener {
             bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
+            selectedPin = null // Resetăm selecția
         }
 
         val clujNapoca = LatLng(46.7712, 23.6236)

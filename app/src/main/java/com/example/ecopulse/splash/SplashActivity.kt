@@ -18,17 +18,17 @@ import okhttp3.OkHttpClient
 
 @SuppressLint("CustomSplashScreen")
 class SplashActivity : AppCompatActivity() {
-    private val client = OkHttpClient()
+    // private val client = OkHttpClient()
     // 2500ms = 2.5 secunde
     private val SPLASH_DELAY: Long = 2500
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.d("API " , "Am primit")
-        CoroutineScope(Dispatchers.IO).launch {
-            val response = callEndpoint()
-            Log.d("API", "Response: $response")
-        }//how to map response data to a data class
+        // Log.d("API " , "Am primit")
+        // CoroutineScope(Dispatchers.IO).launch {
+           // val response = callEndpoint()
+            //Log.d("API", "Response: $response")
+       // }//how to map response data to a data class
         //how to populate data from data class to app page
         setContentView(R.layout.activity_splash)
 
@@ -44,13 +44,13 @@ class SplashActivity : AppCompatActivity() {
         }, SPLASH_DELAY)
     }
 
-    private fun callEndpoint(): String? {
-        val request = Request.Builder()
-            .url("http://10.0.10.180:8080/api/v1/history")
-            .build()
-
-        client.newCall(request).execute().use { response ->
-            return response.body?.string()
-        }
-    }
+//    private fun callEndpoint(): String? {
+//        val request = Request.Builder()
+//            .url("http://10.0.10.180:8080/api/v1/history")
+//            .build()
+//
+//        client.newCall(request).execute().use { response ->
+//            return response.body?.string()
+//        }
+//    }
 }
