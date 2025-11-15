@@ -6,4 +6,6 @@
     <color name="eco_green_light_bg">#F4F6F4</color> <!-- Fundalul deschis -->
     <color name="text_primary">#212121</color>
     <color name="text_secondary">#757575</color>
+
+    <color name="text_input_dark_gray">#333333</color>
 </resources>

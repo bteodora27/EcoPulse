@@ -19,7 +19,6 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.example.ecopulse.R
-// Importăm noile modele API
 import com.example.ecopulse.network.ApiClient
 import com.example.ecopulse.network.StartCleanupRequest
 import com.example.ecopulse.network.StartCleanupResponse
@@ -40,6 +39,9 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
+// Importăm MainActivity pentru a accesa funcția publică (asigură-te că importul este corect)
+import com.example.ecopulse.main.MainActivity
+
 class HartaFragment : Fragment(), OnMapReadyCallback {
 
     private var googleMap: GoogleMap? = null
@@ -50,19 +52,16 @@ class HartaFragment : Fragment(), OnMapReadyCallback {
     private var selectedPin: MapPin? = null
     private lateinit var fusedLocationClient: FusedLocationProviderClient
 
-    // Launcher-ul de permisiuni (corpul era gol, l-am completat)
     private val requestPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
         if (permissions[Manifest.permission.ACCESS_FINE_LOCATION] == true ||
             permissions[Manifest.permission.ACCESS_COARSE_LOCATION] == true
         ) {
-            // Dacă a dat permisiunea, încercăm din nou să luăm locația
             getCurrentLocation()
         } else {
-            Toast.makeText(context, "Permisiunea pentru locație a fost refuzată.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "Location permission denied.", Toast.LENGTH_SHORT).show() // TRADUS
         }
     }
 
-    // Piunezele de test pentru Timișoara
     data class MapPin(
         val position: LatLng,
         val title: String,
@@ -70,14 +69,29 @@ class HartaFragment : Fragment(), OnMapReadyCallback {
         val isClean: Boolean
     )
     private val pins = listOf(
-        MapPin(LatLng(45.7575, 21.2288), "Zona Piața Unirii", "Nu a fost curățată niciodată.", false),
-        MapPin(LatLng(45.7535, 21.2255), "Piața Victoriei", "Curățat de @teodora acum 1 săptămână", true),
-        MapPin(LatLng(45.7472, 21.2262), "Parcul Catedralei", "Murdar (raportat recent)", false)
+        MapPin(LatLng(45.7575, 21.2288), "Unirii Square Area", "Has never been cleaned.", false), // TRADUS
+        MapPin(LatLng(45.7535, 21.2255), "Victoriei Square", "Cleaned by @teodora 1 week ago", true), // TRADUS
+        MapPin(LatLng(45.7472, 21.2262), "Cathedral Park", "Dirty (recently reported)", false) // TRADUS
     )
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_map, container, false)
     }
+
+    // NOU: Logica pentru ascunderea FAB-ului global când fragmentul Map este vizibil
+    override fun onResume() {
+        super.onResume()
+        // Ascunde FAB-ul global (Create Event)
+        (activity as? MainActivity)?.setFabVisibility(false)
+    }
+
+    // NOU: Logica pentru re-afișarea FAB-ului global când fragmentul Map nu mai este vizibil
+    override fun onPause() {
+        super.onPause()
+        // Re-afișează FAB-ul global (Create Event)
+        (activity as? MainActivity)?.setFabVisibility(true)
+    }
+    // END NOU
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -98,12 +112,19 @@ class HartaFragment : Fragment(), OnMapReadyCallback {
         map.uiSettings.isZoomControlsEnabled = false
         map.uiSettings.isMyLocationButtonEnabled = false
         addMarkersToMap()
+        Log.d("HartaDebug", "onMapReady: Map is ready.") // TRADUS
+
         map.setOnMarkerClickListener { marker ->
+            Log.d("HartaDebug", "!!! MARKER CLICK DETECTED !!! Title: ${marker.title}") // TRADUS
             val pin = marker.tag as? MapPin
             if (pin != null) {
+                Log.d("HartaDebug", "Marker has tag. Showing bottom sheet for: ${pin.title}") // TRADUS
                 selectedPin = pin
                 updateBottomSheet(pin)
-                bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+                bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
+            }
+            else {
+                Log.e("HartaDebug", "ERROR: marker.tag is NULL. Check addMarkersToMap.") // TRADUS
             }
             true
         }
@@ -116,10 +137,23 @@ class HartaFragment : Fragment(), OnMapReadyCallback {
     }
 
     private fun addMarkersToMap() {
+        Log.d("HartaDebug", "Adding ${pins.size} markers to the map...") // TRADUS
+
         pins.forEach { pin ->
             val icon = if (pin.isClean) BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)
             else BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)
-            googleMap?.addMarker(MarkerOptions().position(pin.position).title(pin.title).icon(icon))?.tag = pin
+
+            val marker = googleMap?.addMarker(
+                MarkerOptions()
+                    .position(pin.position)
+                    .title(pin.title)
+                    .icon(icon)
+            )
+            marker?.tag = pin
+
+            if (marker == null) {
+                Log.e("HartaDebug", "ERROR: addMarker failed for pin: ${pin.title}") // TRADUS
+            }
         }
     }
 
@@ -144,7 +178,7 @@ class HartaFragment : Fragment(), OnMapReadyCallback {
             }
         }
         view.findViewById<ExtendedFloatingActionButton>(R.id.fab_report_area).setOnClickListener {
-            Toast.makeText(context, "Report Area clicked", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "Report Area clicked", Toast.LENGTH_SHORT).show() // TRADUS
         }
 
         btnStartCleanup.setOnClickListener {
@@ -154,40 +188,28 @@ class HartaFragment : Fragment(), OnMapReadyCallback {
                     longitude = pin.position.longitude,
                     zoneName = pin.title
                 )
-                Toast.makeText(context, "Se creează sesiunea...", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "Creating session...", Toast.LENGTH_SHORT).show() // TRADUS
                 ApiClient.apiService.startIndividualCleanup(requestBody).enqueue(object : Callback<StartCleanupResponse> {
                     override fun onResponse(call: Call<StartCleanupResponse>, response: Response<StartCleanupResponse>) {
                         if (response.isSuccessful) {
-                            Toast.makeText(context, "Sesiune începută! Mergi la Profil (Sesiuni Active).", Toast.LENGTH_LONG).show()
+                            Toast.makeText(context, "Session started! Go to Profile (Active Sessions).", Toast.LENGTH_LONG).show() // TRADUS
                             bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
                             selectedPin = null
-                            // TODO: Schimbă piuneza roșie în galbenă (în progres)
+                            // TODO: Change red pin to yellow (in progress)
                         } else {
-                            Toast.makeText(context, "Eroare server: ${response.message()}", Toast.LENGTH_SHORT).show()
-                            Log.e("START_CLEANUP", "Eroare: ${response.code()}")
+                            Toast.makeText(context, "Server error: ${response.message()}", Toast.LENGTH_SHORT).show() // TRADUS
+                            Log.e("START_CLEANUP", "Error: ${response.code()}") // TRADUS
                         }
                     }
                     override fun onFailure(call: Call<StartCleanupResponse>, t: Throwable) {
-                        Toast.makeText(context, "Eroare rețea: ${t.message}", Toast.LENGTH_SHORT).show()
-                        Log.e("START_CLEANUP", "Failure: ${t.message}")
+                        Toast.makeText(context, "Network error: ${t.message}", Toast.LENGTH_SHORT).show() // TRADUS
+                        Log.e("START_CLEANUP", "Failure: ${t.message}") // TRADUS
                     }
                 })
             } ?: run {
-                Toast.makeText(context, "Eroare: Zona selectată nu a fost găsită.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "Error: Selected area not found.", Toast.LENGTH_SHORT).show() // TRADUS
             }
         }
-    } // <-- AICI SE TERMINA setupButtonListeners
-
-    // =================================================================
-    // ▼▼▼ ACESTE FUNCȚII AU FOST DUPLICATE/GOLITE ÎN CODUL TĂU ▼▼▼
-    // =================================================================
-
-    private fun checkPermissions(): Boolean {
-        return ContextCompat.checkSelfPermission(
-            requireContext(), Manifest.permission.ACCESS_FINE_LOCATION
-        ) == PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(
-            requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION
-        ) == PackageManager.PERMISSION_GRANTED
     }
 
     @SuppressLint("MissingPermission")
@@ -199,23 +221,32 @@ class HartaFragment : Fragment(), OnMapReadyCallback {
                 if (location != null) {
                     val currentLatLng = LatLng(location.latitude, location.longitude)
                     googleMap?.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 15f))
-                    Toast.makeText(context, "Locație găsită!", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "Location found!", Toast.LENGTH_SHORT).show() // TRADUS
                 } else {
-                    Toast.makeText(context, "Nu am putut găsi locația. Verifică dacă GPS-ul e pornit.", Toast.LENGTH_LONG).show()
+                    Toast.makeText(context, "Could not find location. Check if GPS is enabled.", Toast.LENGTH_LONG).show() // TRADUS
                 }
             }
     }
 
+    private fun checkPermissions(): Boolean {
+        return ContextCompat.checkSelfPermission(
+            requireContext(), Manifest.permission.ACCESS_FINE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(
+            requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED
+    }
+
     private fun showAboutDialog() {
+        // TRADUS întregul dialog
         AlertDialog.Builder(requireContext())
-            .setTitle("Despre Marcajele Hărții")
+            .setTitle("About Map Markers")
             .setMessage(
-                "Pe hartă veți găsi două tipuri de marcaje:\n\n" +
-                        "🔴 ROȘU: O zonă murdară. Apasă pe ea pentru a începe o sesiune de curățenie.\n\n" +
-                        "🟢 VERDE: O zonă curățată recent. Apasă pe ea pentru a vedea cine și când a curățat-o."
+                "On the map you will find two types of markers:\n\n" +
+                        "🔴 RED: A dirty area. Press it to start a cleanup session.\n\n" +
+                        "🟢 GREEN: A recently cleaned area. Press it to see who cleaned it and when."
             )
-            .setPositiveButton("Am înțeles", null)
+            .setPositiveButton("I understand", null)
             .show()
     }
 
-} // <-- AICI SE TERMINĂ CLASA HartaFragment
+}

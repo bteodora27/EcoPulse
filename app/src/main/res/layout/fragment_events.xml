@@ -20,12 +20,16 @@
             android:textSize="24sp"
             android:textStyle="bold"
             android:textColor="@color/text_primary"
-            android:layout_margin="16dp"/>
+            android:layout_marginTop="32dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="16dp"/>
 
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/events_tab_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
             android:background="@android:color/transparent"
             app:tabIndicatorColor="@color/eco_green"
             app:tabSelectedTextColor="@color/eco_green"
@@ -45,7 +49,9 @@
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="16dp"
             app:cardCornerRadius="16dp">
 
             <RelativeLayout
@@ -80,7 +86,7 @@
             android:id="@+id/recycler_view_events"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingBottom="16dp"
+            android:paddingBottom="80dp"
             tools:listitem="@layout/item_event"
             tools:itemCount="3"/>
 

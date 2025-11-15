@@ -13,7 +13,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.ecopulse.main.MainActivity
 import com.example.ecopulse.R
-import com.example.ecopulse.network.* // Importă tot (ApiClient, LoginRequest, LoginResponse, etc.)
+import com.example.ecopulse.network.* // Importă tot
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.textfield.TextInputEditText
 import retrofit2.Call
@@ -22,7 +22,6 @@ import retrofit2.Response
 
 class LoginActivity : AppCompatActivity() {
 
-    // Referință la SharedPreferences pentru a salva token-ul
     private lateinit var sharedPreferences: SharedPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -30,7 +29,6 @@ class LoginActivity : AppCompatActivity() {
         setContentView(R.layout.activity_login)
         supportActionBar?.hide()
 
-        // Inițializează SharedPreferences
         sharedPreferences = getSharedPreferences("EcoPulsePrefs", Context.MODE_PRIVATE)
 
         // --- Găsește Toate Elementele din XML ---
@@ -38,7 +36,7 @@ class LoginActivity : AppCompatActivity() {
         val loginSection = findViewById<LinearLayout>(R.id.login_section)
         val registerSection = findViewById<LinearLayout>(R.id.register_section)
         val btnLogin = findViewById<Button>(R.id.btn_login)
-        val btnRegister = findViewById<Button>(R.id.btn_register)
+        val btnRegister = findViewById<Button>(R.id.btn_register) // ID-ul din XML
 
         // Câmpurile de Login
         val etLoginEmail = findViewById<TextInputEditText>(R.id.et_login_email)
@@ -56,7 +54,6 @@ class LoginActivity : AppCompatActivity() {
         val etRegLastName = findViewById<TextInputEditText>(R.id.et_reg_lastname)
         val etRegBirthDate = findViewById<TextInputEditText>(R.id.et_reg_birthdate)
 
-        // --- Referințe Câmpuri Organization (LIPSEAU) ---
         val etRegOrgUsername = findViewById<TextInputEditText>(R.id.et_reg_org_username)
         val etRegOrgEmail = findViewById<TextInputEditText>(R.id.et_reg_org_email)
         val etRegOrgPassword = findViewById<TextInputEditText>(R.id.et_reg_org_password)
@@ -71,11 +68,22 @@ class LoginActivity : AppCompatActivity() {
         tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab?) {
                 if (tab?.position == 0) {
+                    // Când este selectat LOGIN
                     loginSection.visibility = View.VISIBLE
                     registerSection.visibility = View.GONE
+
+                    // --- MODIFICAREA AICI ---
+                    btnLogin.visibility = View.VISIBLE
+                    btnRegister.visibility = View.GONE
+
                 } else {
+                    // Când este selectat REGISTER
                     loginSection.visibility = View.GONE
                     registerSection.visibility = View.VISIBLE
+
+                    // --- MODIFICAREA AICI ---
+                    btnLogin.visibility = View.GONE
+                    btnRegister.visibility = View.VISIBLE
                 }
             }
             override fun onTabUnselected(tab: TabLayout.Tab?) {}
@@ -98,51 +106,35 @@ class LoginActivity : AppCompatActivity() {
             val email = etLoginEmail.text.toString()
             val password = etLoginPassword.text.toString()
 
-            // 1. Validare locală
             if (email.isEmpty() || password.isEmpty()) {
                 Toast.makeText(this, "Te rugăm completează toate câmpurile", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
             Toast.makeText(this, "Logging in...", Toast.LENGTH_SHORT).show()
-
-            // 2. Creează obiectul cererii
-            // Schimbă 'passHash = password' în 'password = password'
             val requestBody = LoginRequest(email = email, password = password)
 
-            // 3. Trimite cererea la API
             ApiClient.apiService.loginUser(requestBody).enqueue(object : Callback<LoginResponse> {
 
                 override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {
                     if (response.isSuccessful) {
-                        // SUCCES! (Cod 2xx)
                         val loginResponse = response.body()
-
                         if (loginResponse?.accessToken != null) {
-                            // AM PRIMIT TOKEN!
                             Toast.makeText(this@LoginActivity, loginResponse.message, Toast.LENGTH_SHORT).show()
-
-                            // 1. Salvăm token-ul!
                             saveAuthToken(loginResponse.accessToken)
-
-                            // 2. Îl băgăm în aplicație
                             val intent = Intent(this@LoginActivity, MainActivity::class.java)
                             startActivity(intent)
                             finish()
                         } else {
-                            // Eroare de logică backend (ex: 200 OK dar fără token)
                             Toast.makeText(this@LoginActivity, "Eroare: Răspuns invalid de la server.", Toast.LENGTH_LONG).show()
                         }
-
                     } else {
-                        // EROARE DE LA SERVER (ex: 401 Unauthorized - parolă greșită)
                         Toast.makeText(this@LoginActivity, "Eroare: Email sau parolă incorectă.", Toast.LENGTH_LONG).show()
                         Log.e("LOGIN_FAIL", "Cod: ${response.code()}, Mesaj: ${response.errorBody()?.string()}")
                     }
                 }
 
                 override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
-                    // Eroare de rețea (fără net, IP greșit, server oprit)
                     Toast.makeText(this@LoginActivity, "Eroare rețea: ${t.message}", Toast.LENGTH_LONG).show()
                     Log.e("LOGIN_FAIL", "Eroare conexiune API", t)
                 }
@@ -154,7 +146,6 @@ class LoginActivity : AppCompatActivity() {
             val selectedTypeId = rgUserType.checkedRadioButtonId
 
             if (selectedTypeId == R.id.rb_normal) {
-                // 1. Citește datele și validează
                 val username = etRegUsername.text.toString()
                 val email = etRegEmail.text.toString()
                 val password = etRegPassword.text.toString()
@@ -169,7 +160,6 @@ class LoginActivity : AppCompatActivity() {
                     return@setOnClickListener
                 }
 
-                // 2. Creează obiectul
                 val requestBody = RegisterNormalUserRequest(
                     email = email, username = username, passHash = password,
                     firstName = firstName, lastName = lastName, phone = phone, birthDate = birthDate
@@ -177,22 +167,15 @@ class LoginActivity : AppCompatActivity() {
 
                 Toast.makeText(this, "Se creează contul...", Toast.LENGTH_SHORT).show()
 
-                // 3. Trimite cererea la API
                 ApiClient.apiService.registerNormalUser(requestBody).enqueue(object : Callback<RegisterResponse> {
 
                     override fun onResponse(call: Call<RegisterResponse>, response: Response<RegisterResponse>) {
                         if (response.isSuccessful) {
-                            // SUCCES! (Cod 2xx)
                             val registerResponse = response.body()
                             val mesaj = registerResponse?.message ?: "Cont creat cu succes"
-
                             Toast.makeText(this@LoginActivity, mesaj, Toast.LENGTH_LONG).show()
-
-                            // === FLUXUL TĂU: ÎL ÎNTOARCEM LA LOGIN ===
-                            tabLayout.getTabAt(0)?.select() // Comută tab-ul înapoi la Login
-
+                            tabLayout.getTabAt(0)?.select()
                         } else {
-                            // EROARE DE LA SERVER (ex: 409 Conflict)
                             val errorMsg = response.message()
                             Toast.makeText(this@LoginActivity, "Eroare server: $errorMsg", Toast.LENGTH_LONG).show()
                             Log.e("REGISTER_FAIL", "Cod: ${response.code()}, Mesaj: ${response.errorBody()?.string()}")
@@ -200,18 +183,12 @@ class LoginActivity : AppCompatActivity() {
                     }
 
                     override fun onFailure(call: Call<RegisterResponse>, t: Throwable) {
-                        // Aici va crăpa DOAR dacă JSON-ul nu se potrivește
                         Toast.makeText(this@LoginActivity, "Eroare rețea: ${t.message}", Toast.LENGTH_LONG).show()
                         Log.e("REGISTER_FAIL", "Eroare conexiune API", t)
                     }
                 })
 
             } else {
-                // =============================================
-                // ▼▼▼ LOGICA NOUĂ PENTRU ORGANIZAȚIE ▼▼▼
-                // =============================================
-
-                // 1. Citește datele din formularul de Organizație
                 val username = etRegOrgUsername.text.toString()
                 val email = etRegOrgEmail.text.toString()
                 val password = etRegOrgPassword.text.toString()
@@ -219,17 +196,15 @@ class LoginActivity : AppCompatActivity() {
                 val phone = etRegOrgPhone.text.toString()
                 val contactEmail = etRegOrgContactEmail.text.toString()
                 val address = etRegOrgAddress.text.toString()
-                val website = etRegOrgWebsite.text.toString().ifEmpty { null } // Opțional
-                val description = etRegOrgDesc.text.toString().ifEmpty { null } // Opțional
+                val website = etRegOrgWebsite.text.toString().ifEmpty { null }
+                val description = etRegOrgDesc.text.toString().ifEmpty { null }
 
-                // 2. Validează câmpurile obligatorii
                 if (username.isEmpty() || email.isEmpty() || password.isEmpty() ||
                     orgName.isEmpty() || phone.isEmpty() || contactEmail.isEmpty() || address.isEmpty()) {
                     Toast.makeText(this, "Completează câmpurile obligatorii (Organizație)", Toast.LENGTH_SHORT).show()
                     return@setOnClickListener
                 }
 
-                // 3. Creează obiectul de trimis
                 val requestBody = RegisterOrgRequest(
                     email = email,
                     username = username,
@@ -244,19 +219,14 @@ class LoginActivity : AppCompatActivity() {
 
                 Toast.makeText(this, "Se creează contul de organizație...", Toast.LENGTH_SHORT).show()
 
-                // 4. Trimite cererea la API
                 ApiClient.apiService.registerOrganization(requestBody).enqueue(object : Callback<RegisterResponse> {
                     override fun onResponse(call: Call<RegisterResponse>, response: Response<RegisterResponse>) {
                         if (response.isSuccessful) {
-                            // SUCCES! (Cod 2xx)
                             val registerResponse = response.body()
                             val mesaj = registerResponse?.message ?: "Cont creat cu succes"
                             Toast.makeText(this@LoginActivity, mesaj, Toast.LENGTH_LONG).show()
-
-                            // Întoarce la Login
                             tabLayout.getTabAt(0)?.select()
                         } else {
-                            // EROARE DE LA SERVER (ex: 409 Conflict)
                             val errorMsg = response.message()
                             Toast.makeText(this@LoginActivity, "Eroare server: $errorMsg", Toast.LENGTH_LONG).show()
                             Log.e("REGISTER_ORG_FAIL", "Cod: ${response.code()}, Mesaj: ${response.errorBody()?.string()}")
@@ -272,7 +242,6 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
-    // Funcție ajutătoare pentru a SALVA token-ul
     private fun saveAuthToken(token: String) {
         val editor = sharedPreferences.edit()
         editor.putString("AUTH_TOKEN", token)

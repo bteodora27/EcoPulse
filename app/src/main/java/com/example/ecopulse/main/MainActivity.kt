@@ -10,17 +10,18 @@ import com.example.ecopulse.events.EventsFragment
 import com.example.ecopulse.map.HartaFragment
 import com.example.ecopulse.profile.ProfileFragment
 import com.example.ecopulse.rewards.RewardsFragment
-
-
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
+import android.view.View // Adăugat pentru a folosi View
 
 class MainActivity : AppCompatActivity() {
 
-    // simulare
     private val currentUserRank = 1
     private val requiredRank = 3
+
+    // Mutat referința la FAB în clasa, pentru acces public
+    private lateinit var fabCreateEvent: FloatingActionButton
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,7 +29,7 @@ class MainActivity : AppCompatActivity() {
         supportActionBar?.hide()
 
         val bottomNavView = findViewById<BottomNavigationView>(R.id.bottom_navigation_view)
-        val fabCreateEvent = findViewById<FloatingActionButton>(R.id.fab_create_event)
+        fabCreateEvent = findViewById<FloatingActionButton>(R.id.fab_create_event) // Inițializat
 
         if (savedInstanceState == null) {
             loadFragment(EventsFragment())
@@ -39,17 +40,21 @@ class MainActivity : AppCompatActivity() {
 
             when (item.itemId) {
                 R.id.nav_events -> {
+                    // Când mergi pe Events, asigură-te că FAB-ul e vizibil
+                    setFabVisibility(true)
                     selectedFragment = EventsFragment()
                 }
                 R.id.nav_map -> {
+                    // Când mergi pe Map, ascunde FAB-ul Add Event
+                    setFabVisibility(false)
                     selectedFragment = HartaFragment()
                 }
                 R.id.nav_profile -> {
-
+                    setFabVisibility(false)
                     selectedFragment = ProfileFragment()
                 }
                 R.id.nav_rewards -> {
-                    // TODO: Creează și încarcă RewardsFragment
+                    setFabVisibility(false)
                     selectedFragment = RewardsFragment()
                 }
             }
@@ -62,22 +67,25 @@ class MainActivity : AppCompatActivity() {
         }
 
         fabCreateEvent.setOnClickListener { view ->
-
             if (currentUserRank >= requiredRank) {
-                // DACĂ ARE RANGUL: Pornește activitatea de creare a evenimentului
-                // TODO: Va trebui să creăm 'CreateEventActivity'
-                Toast.makeText(this, "Ai rangul necesar! Pornim editorul...", Toast.LENGTH_SHORT).show()
-
+                Toast.makeText(this, "You have the required rank! Starting event editor...", Toast.LENGTH_SHORT).show()
             } else {
-                // DACĂ NU ARE RANGUL: Afișează un mesaj sugestiv
-                Snackbar.make(view, "Trebuie să atingi rangul 'Garda Eco' pentru a crea evenimente!", Snackbar.LENGTH_LONG)
+                Snackbar.make(view, "You must reach the 'Eco Guard' rank to create events!", Snackbar.LENGTH_LONG)
                     .setAction("Info", null)
                     .show()
             }
         }
     }
 
-    // Funcție ajutătoare pentru a încărca un fragment
+    // NOU: Funcție publică pentru a controla vizibilitatea FAB-ului
+    fun setFabVisibility(isVisible: Boolean) {
+        if (isVisible) {
+            fabCreateEvent.show()
+        } else {
+            fabCreateEvent.hide()
+        }
+    }
+
     private fun loadFragment(fragment: Fragment) {
         supportFragmentManager.beginTransaction()
             .replace(R.id.fragment_container, fragment)
