@@ -2,8 +2,11 @@ package com.example.Beckend_EcoPulse.services;
 
 import com.example.Beckend_EcoPulse.models.StandardUser;
 import com.example.Beckend_EcoPulse.models.User;
+import com.example.Beckend_EcoPulse.models.UserSession;
 import com.example.Beckend_EcoPulse.repositories.StandardUserRepository;
 import com.example.Beckend_EcoPulse.repositories.UserRepository;
+import com.example.Beckend_EcoPulse.repositories.UserSessionRepository;
+import com.example.Beckend_EcoPulse.requests.LoginRequest;
 import com.example.Beckend_EcoPulse.requests.SignUpRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -11,13 +14,19 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class AuthService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private UserSessionRepository userSessionRepository;
 
     @Autowired
     private StandardUserRepository standardUserRepository; // NOU: Repository-ul pentru copil
@@ -67,5 +76,41 @@ public class AuthService {
         standardUserRepository.save(standardUser);
 
         return savedUser;
+    }
+
+    @Transactional
+    public String loginUser(LoginRequest loginRequest) {
+
+        // 1. Găsește user-ul după email
+        Optional<User> userOptional = userRepository.findByEmail(loginRequest.getEmail());
+        if (userOptional.isEmpty()) {
+            throw new RuntimeException("Credentiale invalide.");
+        }
+        User user = userOptional.get();
+
+        // 2. Verifică parola
+        if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassHash())) {
+            throw new RuntimeException("Credentiale invalide.");
+        }
+
+        // 3. Creează Token-uri
+        // (Folosim UUID-uri simple, deoarece "inteligența" stă în baza de date)
+        String accessToken = UUID.randomUUID().toString();
+        String refreshToken = UUID.randomUUID().toString(); // Pentru reînnoire
+
+        // 4. Creează și Salvează Sesiunea
+        UserSession session = new UserSession();
+        session.setUser(user); // Setează legătura (cheia străină userID)
+        session.setAccessToken(accessToken);
+        session.setRefreshToken(refreshToken);
+        session.setExpiresAt(LocalDateTime.now().plusHours(8)); // Setează expirarea (ex: 8 ore)
+        // (createdAt se pune automat de @CreationTimestamp)
+
+        // TODO: Poți adăuga ipAddress și deviceInfo dacă le primești de la Android
+
+        userSessionRepository.save(session);
+
+        // 5. Returnează doar Access Token-ul
+        return accessToken;
     }
 }
