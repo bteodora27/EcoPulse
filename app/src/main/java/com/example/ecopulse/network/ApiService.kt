@@ -9,6 +9,6 @@ interface ApiService {
      * Endpoint-ul de citire a istoricului.
      * ATENȚIE: Nu începe cu "/"! Retrofit îl adaugă automat la BASE_URL.
      */
-    @GET("api/v1/test-db-save")
+    @GET("api/v1/history")
     fun getHistory(): Call<List<HistoryItem>>
 }

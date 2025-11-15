@@ -46,7 +46,7 @@ class SplashActivity : AppCompatActivity() {
 
     private fun callEndpoint(): String? {
         val request = Request.Builder()
-            .url("http://10.0.10.180:8080/api/v1/test-db-save")
+            .url("http://10.0.10.180:8080/api/v1/history")
             .build()
 
         client.newCall(request).execute().use { response ->
