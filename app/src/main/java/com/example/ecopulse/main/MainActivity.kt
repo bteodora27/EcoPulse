@@ -15,7 +15,6 @@ import com.example.ecopulse.rewards.RewardsFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
-import java.nio.file.Files.list
 
 class MainActivity : AppCompatActivity() {
 

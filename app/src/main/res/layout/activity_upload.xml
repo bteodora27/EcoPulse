@@ -28,20 +28,17 @@
             android:textSize="18sp"
             android:textStyle="bold"
             android:layout_marginTop="24dp"/>
-
         <ImageView
             android:id="@+id/img_before"
             android:layout_width="match_parent"
             android:layout_height="200dp"
             android:background="#EEEEEE"
             android:scaleType="centerCrop"
-            android:src="@drawable/ic_add"/>
-
-        <Button
-            android:id="@+id/btn_add_before"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Adaugă Poza 'Before'"/>
+            android:src="@drawable/ic_add"/> <Button
+        android:id="@+id/btn_add_before"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Adaugă Poza 'Before'"/>
 
         <TextView
             android:layout_width="wrap_content"
@@ -50,20 +47,17 @@
             android:textSize="18sp"
             android:textStyle="bold"
             android:layout_marginTop="24dp"/>
-
         <ImageView
             android:id="@+id/img_after"
             android:layout_width="match_parent"
             android:layout_height="200dp"
             android:background="#EEEEEE"
             android:scaleType="centerCrop"
-            android:src="@drawable/ic_add"/>
-
-        <Button
-            android:id="@+id/btn_add_after"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Adaugă Poza 'After'"/>
+            android:src="@drawable/ic_add"/> <Button
+        android:id="@+id/btn_add_after"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Adaugă Poza 'After'"/>
 
         <TextView
             android:layout_width="wrap_content"
@@ -72,20 +66,17 @@
             android:textSize="18sp"
             android:textStyle="bold"
             android:layout_marginTop="24dp"/>
-
         <ImageView
             android:id="@+id/img_bags"
             android:layout_width="match_parent"
             android:layout_height="200dp"
             android:background="#EEEEEE"
             android:scaleType="centerCrop"
-            android:src="@drawable/ic_add"/>
-
-        <Button
-            android:id="@+id/btn_add_bags"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Adaugă Poza cu Sacii"/>
+            android:src="@drawable/ic_add"/> <Button
+        android:id="@+id/btn_add_bags"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Adaugă Poza cu Sacii"/>
 
         <com.google.android.material.textfield.TextInputLayout
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
@@ -93,13 +84,11 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:hint="Numărul de saci strânși">
-
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/et_bag_count"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="number"/>
-
         </com.google.android.material.textfield.TextInputLayout>
 
         <Button
