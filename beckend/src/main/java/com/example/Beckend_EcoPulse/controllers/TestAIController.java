@@ -69,4 +69,5 @@ public class TestAIController {
         // Cheamă serviciul pentru a salva un rând de test
         return aiService.salveazaTestInDB("Test intrebare", "Test raspuns");
     }
+
 }
