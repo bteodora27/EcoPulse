@@ -9,9 +9,10 @@ import java.time.LocalDate;
 @Table(name = "StandardUsers")
 public class StandardUser {
 
-    @Id // Aceasta ESTE cheia primară
+    @Id
     @Column(name = "userID")
-    private Long id; // NU are @GeneratedValue. ID-ul este preluat de la 'User
+    private Long id;
+
     @OneToOne
     @MapsId
     @JoinColumn(name = "userID")
@@ -22,7 +23,17 @@ public class StandardUser {
     private String phone;
     private LocalDate birthDate;
 
-    // ... poți adăuga și restul câmpurilor (rank, points) ...
+    // Câmp care indică dacă user-ul poate crea evenimente
+    @Column(nullable = false)
+    private Boolean canCreateEvent = false;
 
-    public StandardUser() {} // Constructor gol
+    // Constructor gol necesar pentru JPA
+    public StandardUser() {}
+
+    // Poți adăuga constructori cu parametri sau metode de business, dacă dorești
+
+
+    public Boolean canCreateEvent() {
+        return canCreateEvent;
+    }
 }
