@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:background="#FFFFFF"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:padding="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <!-- IMAGINE MARE -->
+        <ImageView
+            android:id="@+id/details_image"
+            android:layout_width="match_parent"
+            android:layout_height="220dp"
+            android:scaleType="centerCrop"
+            android:background="#CCCCCC"
+            android:clipToOutline="true"
+            android:layout_marginBottom="20dp"/>
+
+        <!-- TITLU -->
+        <TextView
+            android:id="@+id/details_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Cafea gratuită"
+            android:textStyle="bold"
+            android:textColor="#111"
+            android:textSize="24sp"/>
+
+        <!-- PARTENER -->
+        <TextView
+            android:id="@+id/details_partner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="5 Coffee Roastery"
+            android:textColor="#333"
+            android:textSize="16sp"
+            android:layout_marginTop="6dp"/>
+
+        <!-- EXPIRA -->
+        <TextView
+            android:id="@+id/details_expires"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Valabil până la 31.12.2024"
+            android:textColor="#777"
+            android:textSize="14sp"
+            android:layout_marginTop="4dp"/>
+
+        <!-- PUNCTE -->
+        <TextView
+            android:id="@+id/details_points"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="500 puncte"
+            android:textStyle="bold"
+            android:textColor="#2D8A3B"
+            android:textSize="18sp"
+            android:layout_marginTop="12dp"/>
+
+        <!-- DESCRIERE -->
+        <TextView
+            android:id="@+id/details_description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Această cafea premium este oferită de partenerul nostru local. Valabilă în orice locație până la data afișată."
+            android:textColor="#444"
+            android:textSize="16sp"
+            android:lineSpacingExtra="6dp"
+            android:layout_marginTop="20dp"/>
+
+        <!-- BUTON -->
+        <TextView
+            android:id="@+id/btn_claim"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:gravity="center"
+            android:text="Revendică recompensa"
+            android:textSize="17sp"
+            android:textStyle="bold"
+            android:textColor="#FFFFFF"
+            android:background="#2D8A3B"
+            android:layout_marginTop="30dp"
+            android:padding="10dp"
+            android:layout_marginBottom="40dp"
+            android:backgroundTint="@null"/>
+    </LinearLayout>
+
+</ScrollView>

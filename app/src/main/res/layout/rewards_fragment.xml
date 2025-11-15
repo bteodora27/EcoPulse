@@ -2,7 +2,8 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F6F8F6">
+    android:background="#F5F5F5"
+    android:fillViewport="true">
 
     <LinearLayout
         android:orientation="vertical"
@@ -10,146 +11,91 @@
         android:layout_height="wrap_content"
         android:padding="16dp">
 
-        <!-- HEADER -->
+        <!-- TOP BAR -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:paddingBottom="12dp">
+            android:gravity="center_vertical">
 
             <ImageView
                 android:id="@+id/btn_back"
                 android:layout_width="32dp"
                 android:layout_height="32dp"
-                android:src="@android:drawable/ic_media_previous" />
+                android:src="@drawable/ic_back_arrow"
+                android:padding="6dp"/>
 
             <TextView
-                android:id="@+id/tv_title"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:text="Recompense"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                android:textColor="#1F2937" />
-
-            <View
-                android:layout_width="32dp"
-                android:layout_height="32dp" />
-        </LinearLayout>
-
-        <!-- POINTS CARD -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="16dp"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:background="#FFFFFF"
-            android:elevation="4dp"
-            android:layout_marginBottom="16dp">
-
-            <LinearLayout
-                android:orientation="vertical"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1">
-
-                <TextView
-                    android:text="Balanța Puncte"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textStyle="bold"
-                    android:textColor="#1F2937"
-                    android:textSize="16sp" />
-
-                <TextView
-                    android:id="@+id/tv_points_balance"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Ai 2.500 puncte"
-                    android:textSize="15sp"
-                    android:textColor="#3BBF3F"
-                    android:paddingTop="4dp"
-                    android:textStyle="bold" />
-            </LinearLayout>
-
-            <ImageView
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:src="@android:drawable/ic_menu_gallery"
-                android:padding="8dp"
-                android:background="#143BBF3F"
-                android:layout_marginLeft="10dp" />
-        </LinearLayout>
-
-        <!-- FILTER CHIPS -->
-        <HorizontalScrollView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:scrollbars="none"
-            android:paddingBottom="16dp">
-
-            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:text="Recompense"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:layout_marginStart="10dp"
+                android:textColor="#222"/>
+        </LinearLayout>
 
-                <TextView
-                    android:id="@+id/chip_all"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:padding="10dp"
-                    android:paddingLeft="18dp"
-                    android:paddingRight="18dp"
-                    android:text="Toate"
-                    android:textColor="#FFFFFF"
-                    android:textStyle="bold"
-                    android:background="#3BBF3F"
-                    android:layout_marginRight="10dp" />
+        <!-- ============================= -->
+        <!--         FOOD SECTION          -->
+        <!-- ============================= -->
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:padding="10dp"
-                    android:paddingLeft="18dp"
-                    android:paddingRight="18dp"
-                    android:text="Mâncare"
-                    android:textColor="#1F2937"
-                    android:background="#EEEEEE"
-                    android:layout_marginRight="10dp" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="🍽 Mâncare"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="#333"
+            android:layout_marginTop="20dp"/>
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:padding="10dp"
-                    android:paddingLeft="18dp"
-                    android:paddingRight="18dp"
-                    android:text="Servicii"
-                    android:textColor="#1F2937"
-                    android:background="#EEEEEE"
-                    android:layout_marginRight="10dp" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:padding="10dp"
-                    android:paddingLeft="18dp"
-                    android:paddingRight="18dp"
-                    android:text="Produse"
-                    android:textColor="#1F2937"
-                    android:background="#EEEEEE" />
-            </LinearLayout>
-        </HorizontalScrollView>
-
-        <!-- LISTA RECOMPENSE -->
         <LinearLayout
-            android:id="@+id/rewards_container"
+            android:id="@+id/container_food"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical" />
+            android:orientation="vertical"
+            android:layout_marginTop="10dp"/>
+
+
+        <!-- ============================= -->
+        <!--         SERVICES SECTION      -->
+        <!-- ============================= -->
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="🛠 Servicii"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="#333"
+            android:layout_marginTop="20dp"/>
+
+        <LinearLayout
+            android:id="@+id/container_services"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="10dp"/>
+
+
+        <!-- ============================= -->
+        <!--         DISCOUNT SECTION      -->
+        <!-- ============================= -->
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="🛍 Reduceri"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="#333"
+            android:layout_marginTop="20dp"/>
+
+        <LinearLayout
+            android:id="@+id/container_discounts"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="10dp"/>
 
     </LinearLayout>
 

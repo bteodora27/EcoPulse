@@ -4,65 +4,67 @@
     android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:padding="12dp"
-    android:layout_marginTop="10dp"
-    android:background="#FFFFFF"
-    android:elevation="3dp"
-    android:gravity="center_vertical">
+    android:background="@drawable/reward_card_bg"
+    android:layout_marginBottom="12dp">
 
-    <!-- Reward image -->
+    <!-- IMAGINEA -->
     <ImageView
         android:id="@+id/reward_image"
         android:layout_width="80dp"
         android:layout_height="80dp"
         android:scaleType="centerCrop"
-        android:background="#DDDDDD"
-        android:layout_marginEnd="12dp" />
+        android:layout_marginEnd="12dp"
+        android:background="@drawable/rounded_image"
+        android:clipToOutline="true"/>
 
-    <!-- TEXT CONTENT -->
+    <!-- TEXTURILE (în dreapta imaginii) -->
     <LinearLayout
+        android:orientation="vertical"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:orientation="vertical">
+        android:layout_weight="1">
 
+        <!-- PUNCTELE — MEREU PRIMELE -->
         <TextView
-            android:id="@+id/tv_reward_partner"
+            android:id="@+id/tv_reward_points"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Nume Partener"
-            android:textSize="13sp"
-            android:textColor="#777777" />
+            android:text="350 Puncte"
+            android:textColor="#4CAF50"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            android:layout_marginBottom="4dp" />
 
+        <!-- TITLUL BENEFICIULUI -->
         <TextView
             android:id="@+id/tv_reward_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Titlu Reward"
+            android:text="Pizza Margherita"
+            android:textColor="#000"
             android:textStyle="bold"
-            android:textSize="16sp"
-            android:textColor="#111111"
-            android:paddingTop="2dp" />
+            android:textSize="18sp" />
 
+        <!-- PARTENER (cine oferă recompensa) -->
+        <TextView
+            android:id="@+id/tv_reward_partner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Italiano"
+            android:textColor="#777"
+            android:textSize="14sp"
+            android:layout_marginTop="2dp" />
+
+        <!-- DATA EXPIRĂRII -->
         <TextView
             android:id="@+id/tv_reward_expires"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Valabil până la..."
+            android:text="Expiră în 3 zile"
+            android:textColor="#999"
             android:textSize="12sp"
-            android:textColor="#AAAAAA"
-            android:paddingTop="2dp" />
-    </LinearLayout>
+            android:layout_marginTop="6dp" />
 
-    <!-- POINTS -->
-    <TextView
-        android:id="@+id/tv_reward_points"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="500 Puncte"
-        android:textStyle="bold"
-        android:textColor="#3bbf3f"
-        android:padding="8dp"
-        android:background="#203bbf3f"
-        android:layout_marginStart="8dp" />
+    </LinearLayout>
 
 </LinearLayout>

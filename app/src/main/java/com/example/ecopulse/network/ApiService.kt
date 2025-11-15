@@ -1,9 +1,13 @@
 package com.example.ecopulse.network // Pachetul lor
 
+import okhttp3.MultipartBody
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Body
+import retrofit2.http.Multipart
 import retrofit2.http.POST
+import retrofit2.http.Part
+import retrofit2.http.Path
 
 interface ApiService {
 
@@ -22,4 +26,25 @@ interface ApiService {
 
     @POST("api/v1/auth/signup-organization")
     fun registerOrganization(@Body request: RegisterOrgRequest): Call<RegisterResponse>
+
+    @GET("api/v1/users/{userId}/profile")
+    fun getUserProfile(
+        @Path("userId") userId: Long
+    ): Call<UserProfile>
+
+    @GET("api/v1/users/{userId}/activities")
+    fun getUserActivities(
+        @Path("userId") userId: Long
+    ): Call<List<UserActivityItem>>
+
+    @Multipart
+    @POST("api/v1/users/{userId}/profile-picture")
+    fun uploadProfilePicture(
+        @Path("userId") userId: Long,
+        @Part file: MultipartBody.Part
+    ): Call<ApiResponse>
+
+    // ▼▼▼ ADAUGĂ ACEASTĂ FUNCȚIE NOUĂ ▼▼▼ !!!!!!!!!!!!!!!!!!!!!!!!
+    @POST("api/v1/cleanup/start-individual") // Asigură-te că e endpoint-ul corect
+    fun startIndividualCleanup(@Body request: StartCleanupRequest): Call<StartCleanupResponse>
 }
