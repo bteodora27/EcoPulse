@@ -70,4 +70,19 @@ public class TestAIController {
         return aiService.salveazaTestInDB("Test intrebare", "Test raspuns");
     }
 
+    @PostMapping("/analyze-second-ai")
+    public ResponseEntity<?> analyzeSecondAI(
+            @RequestParam("imageFile") MultipartFile imageFile) {
+
+        try {
+            // Trimite fișierul la noua metodă din serviciu
+            Map<String, Object> response = aiService.obtineRaspunsAI2(imageFile);
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body(Map.of("error", e.getMessage()));
+        }
+    }
 }
+

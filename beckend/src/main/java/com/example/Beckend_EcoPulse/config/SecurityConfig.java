@@ -1,4 +1,4 @@
-package com.example.Beckend_EcoPulse.config; // Asigură-te că pachetul este corect!
+package com.example.Beckend_EcoPulse.config; // Asigură-te că pachetul e corect
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -9,37 +9,39 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
-@Configuration // <-- ACEASTA ESTE ESENȚIALĂ pentru a crea @Bean-uri
+@Configuration
 public class SecurityConfig {
 
-    @Bean // <-- Acum @Bean este în interiorul unei clase @Configuration
+    // Bean-ul tău pentru criptarea parolelor (este corect)
+    @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
+    // Bean-ul pentru regulile de securitate (AICI E CORECȚIA)
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                // 1. CRITIC: Dezactivează protecția CSRF (necesar pentru POST/PUT din Postman sau Android)
+                // --- ACEASTA ESTE LINIA CRITICĂ PENTRU EROAREA 403 ---
+                // Spune-i Spring Security SĂ NU MAI BLocheze cererile POST
                 .csrf(AbstractHttpConfigurer::disable)
 
-                // Dezactivează formularele de login implicite
-                .formLogin(AbstractHttpConfigurer::disable)
-                .httpBasic(AbstractHttpConfigurer::disable)
-
-                // 2. STABILEȘTE REGULILE DE ACCES (Ordinea este crucială)
                 .authorizeHttpRequests(auth -> auth
-
-                        // Permite accesul public la TOATE căile care încep cu /auth/
+                        // Permite /signup și /login
                         .requestMatchers("/api/v1/auth/**").permitAll()
 
-                        // Permite accesul public la endpoint-urile de test
+                        // Permite testele
                         .requestMatchers("/api/v1/ping", "/api/v1/history", "/api/v1/test-db-save").permitAll()
 
-                        // Toate celelalte cereri necesită autentificare (login)
+                        // Permite noul tău endpoint de AI
+                        .requestMatchers("/api/v1/analyze-image").permitAll()
+                        .requestMatchers("/api/v1/analyze-second-ai").permitAll()
+
+                        // Blochează restul
                         .anyRequest().authenticated()
                 )
 
-                // Spune-i Spring să nu folosească sesiuni (pentru că vei folosi Token-uri)
+                // Spune-i să nu folosească Sesiuni (pentru JWT/Token)
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 );
