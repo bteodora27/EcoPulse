@@ -16,7 +16,17 @@ public class StandardUser {
     @MapsId
     @JoinColumn(name = "userID")
     private User user;
+    @Column(name = "standardUserRank")
+    private String standardUserRank;
 
+    @Column(name = "totalEventsJoined")
+    private Integer totalEventsJoined;
+
+    @Column(name = "totalPoints")
+    private Integer totalPoints;
+
+    @Column(name = "canCreateEvents")
+    private Boolean canCreateEvents;
     private String firstName;
     private String lastName;
     private String phone;

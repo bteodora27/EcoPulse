@@ -2,6 +2,7 @@ package com.example.Beckend_EcoPulse.config; // Asigură-te că pachetul e corec
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -27,17 +28,11 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
 
                 .authorizeHttpRequests(auth -> auth
-                        // Permite /signup și /login
                         .requestMatchers("/api/v1/auth/**").permitAll()
-
-                        // Permite testele
                         .requestMatchers("/api/v1/ping", "/api/v1/history", "/api/v1/test-db-save").permitAll()
-
-                        // Permite noul tău endpoint de AI
                         .requestMatchers("/api/v1/analyze-image").permitAll()
                         .requestMatchers("/api/v1/analyze-second-ai").permitAll()
-
-                        // Blochează restul
+                        .requestMatchers(HttpMethod.POST, "/api/v1/cleaning/**").permitAll()
                         .anyRequest().authenticated()
                 )
 

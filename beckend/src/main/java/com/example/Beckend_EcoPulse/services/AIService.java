@@ -4,6 +4,7 @@ import com.example.Beckend_EcoPulse.models.ChatHistory;
 import com.example.Beckend_EcoPulse.repositories.ChatHistoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment; // <-- IMPORT NOU
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -50,56 +51,95 @@ public class AIService {
      */
     public Map<String, Object> obtineRaspunsImagine(MultipartFile imageFile) throws IOException {
 
-        // NOU: Obține URL-ul doar când ai nevoie de el
+        // 1. Obține URL-ul din properties
         String aiImageUrl = env.getProperty("ai.service.image.url");
         if (aiImageUrl == null || aiImageUrl.isEmpty()) {
             throw new RuntimeException("URL-ul 'ai.service.image.url' lipsește din application.properties");
         }
 
-        // ... (restul codului tău de creare a cererii este corect) ...
+        // 2. Setează headerele
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+
+        // 3. Crează corpul
         MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
-        body.add("file", new HttpEntity<>(imageFile.getResource(),
-                createFilenameHeader(imageFile.getOriginalFilename())));
+
+        // 4. Creează resursa "in-memory" (metoda sigură)
+        ByteArrayResource imageResource = new ByteArrayResource(imageFile.getBytes()) {
+            @Override
+            public String getFilename() {
+                return imageFile.getOriginalFilename();
+            }
+        };
+
+        // --- AICI ESTE CHEIA PENTRU AI-UL #1 ---
+        // Folosim "file" așa cum ai cerut
+        body.add("file", imageResource);
+        // ------------------------------------
+
+        // 5. Creează entitatea
         HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
 
-        // Apelăm URL-ul
+        // 6. Apelează URL-ul
         Map<String, Object> response = restTemplate.postForObject(
-                aiImageUrl, // <-- Folosim variabila locală
+                aiImageUrl, // Folosim variabila locală
                 requestEntity,
                 Map.class
         );
 
-        // Logica ta de salvare (este corectă)
-        String rezultat = (String) response.get("result");
-        ChatHistory istoric = new ChatHistory("Imagine Analizată", rezultat, LocalDateTime.now());
-        chatRepository.save(istoric);
+        // 7. Logica ta de salvare (este corectă și defensivă)
+        if (response != null && response.containsKey("result")) {
+            String rezultat = (String) response.get("result");
+            ChatHistory istoric = new ChatHistory("Imagine Analizată", rezultat, LocalDateTime.now());
+            chatRepository.save(istoric);
+        } else {
+            System.err.println("Răspuns neașteptat de la AI #1 (cel cu 'file'): " + response);
+        }
 
+        // 8. Returnează răspunsul
         return response;
     }
 
     /**
      * Apelează AL DOILEA server AI (cel de validare)
      */
+
+
     public Map<String, Object> obtineRaspunsAI2(MultipartFile imageFile) throws IOException {
 
-        // NOU: Obține URL-ul doar când ai nevoie de el
         String aiSecondUrl = env.getProperty("ai.service.second.url");
         if (aiSecondUrl == null || aiSecondUrl.isEmpty()) {
-            throw new RuntimeException("URL-ul 'ai.service.second.url' lipsește din application.properties");
+            throw new RuntimeException("URL-ul 'ai.service.second.url' lipsește");
         }
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+
         MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
-        body.add("file", new HttpEntity<>(imageFile.getResource(),
-                createFilenameHeader(imageFile.getOriginalFilename())));
+
+        // --- AICI ESTE CORECȚIA CRITICĂ ---
+
+        // 1. Creăm o resursă "in-memory" din fișierul primit,
+        //    păstrând numele original al fișierului.
+        ByteArrayResource imageResource = new ByteArrayResource(imageFile.getBytes()) {
+            @Override
+            public String getFilename() {
+                return imageFile.getOriginalFilename();
+            }
+        };
+
+        // 2. Adăugăm resursa direct. Cheia "image" este cea importantă.
+        //    RestTemplate va crea automat header-ul Content-Disposition
+        //    folosind "image" ca nume și numele fișierului de mai sus.
+        body.add("image", imageResource);
+
+        // ------------------------------------
+
         HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
 
         // APELEAZĂ NOUL URL
         Map<String, Object> response = restTemplate.postForObject(
-                aiSecondUrl, // <-- Folosim variabila locală
+                aiSecondUrl,
                 requestEntity,
                 Map.class
         );
@@ -107,12 +147,6 @@ public class AIService {
         return response;
     }
 
-    // Funcție ajutătoare (rămâne neschimbată)
-    private HttpHeaders createFilenameHeader(String filename) {
-        HttpHeaders header = new HttpHeaders();
-        header.add("Content-Disposition", "form-data; name=file; filename=\"" + filename + "\"");
-        return header;
-    }
 
     // --- Logica pentru Baza de Date (Testare) ---
 
