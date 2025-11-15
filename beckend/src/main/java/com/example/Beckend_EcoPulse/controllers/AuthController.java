@@ -6,6 +6,7 @@ import com.example.Beckend_EcoPulse.requests.SignUpRequest;
 import com.example.Beckend_EcoPulse.services.AuthService; // NOU: Importă serviciul
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import com.example.Beckend_EcoPulse.requests.OrganizationSignUpRequest;
 
 import java.util.Map;
 // Importurile pentru UserRepository și PasswordEncoder nu mai sunt necesare aici
@@ -55,5 +56,20 @@ public class AuthController {
 
         // ... (Metoda ta de /login rămâne (în mare parte) la fel) ...
         // (Deși ar fi bine să muți și logica de login tot în AuthService)
+    }
+    @PostMapping("/signup-organization")
+    public ResponseEntity<?> registerOrganization(@RequestBody OrganizationSignUpRequest request) {
+        try {
+            // Apelează noua logică din serviciu
+            User savedUser = authService.registerOrganization(request);
+            return ResponseEntity.status(201).body(Map.of(
+                    "message", "Cont organizație creat cu succes.",
+                    "userId", savedUser.getId().toString()
+            ));
+
+        } catch (RuntimeException e) {
+            // Prinde erorile (ex: "Email în uz")
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 }

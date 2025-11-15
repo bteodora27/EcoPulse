@@ -1,12 +1,15 @@
 package com.example.Beckend_EcoPulse.services;
 
+import com.example.Beckend_EcoPulse.models.Organization;
 import com.example.Beckend_EcoPulse.models.StandardUser;
 import com.example.Beckend_EcoPulse.models.User;
 import com.example.Beckend_EcoPulse.models.UserSession;
+import com.example.Beckend_EcoPulse.repositories.OrganizationRepository;
 import com.example.Beckend_EcoPulse.repositories.StandardUserRepository;
 import com.example.Beckend_EcoPulse.repositories.UserRepository;
 import com.example.Beckend_EcoPulse.repositories.UserSessionRepository;
 import com.example.Beckend_EcoPulse.requests.LoginRequest;
+import com.example.Beckend_EcoPulse.requests.OrganizationSignUpRequest;
 import com.example.Beckend_EcoPulse.requests.SignUpRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -33,6 +36,9 @@ public class AuthService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private OrganizationRepository organizationRepository;
 
     /**
      * @Transactional asigură că ambele salvări (save) reușesc,
@@ -112,5 +118,49 @@ public class AuthService {
 
         // 5. Returnează doar Access Token-ul
         return accessToken;
+    }
+    @Transactional
+    public User registerOrganization(OrganizationSignUpRequest request) {
+
+        // 1. Verifică duplicatele (în tabelul 'users')
+        if (userRepository.findByUsername(request.getUsername()).isPresent()) {
+            throw new RuntimeException("Error: Username is already in use!");
+        }
+        if (userRepository.findByEmail(request.getEmail()).isPresent()) {
+            throw new RuntimeException("Error: Email is already in use!");
+        }
+
+        // 2. Creează și Salvează Părintele (User)
+        User newUser = new User();
+        newUser.setEmail(request.getEmail());
+        newUser.setUsername(request.getUsername());
+        newUser.setPassHash(passwordEncoder.encode(request.getPassHash()));
+        newUser.setUserType("organization"); // Setezi tipul corect!
+        // userCreationTime se setează automat de @CreationTimestamp
+
+        User savedUser = userRepository.save(newUser);
+
+        // 3. Creează și Salvează Copilul (Organization)
+        Organization organization = new Organization();
+        organization.setUser(savedUser); // Setează relația și ID-ul (@MapsId)
+
+        // Setează datele specifice organizației
+        organization.setOrganizationName(request.getOrganizationName());
+        organization.setPhone(request.getPhone());
+        organization.setContactEmail(request.getContactEmail());
+        organization.setDescription(request.getDescription());
+        String websiteUrl = request.getWebsite();
+        if (websiteUrl != null && !websiteUrl.isEmpty() &&
+                !websiteUrl.startsWith("http://") && !websiteUrl.startsWith("https://"))
+        {
+            // Dacă nu începe cu http, îl adăugăm noi automat
+            websiteUrl = "http://" + websiteUrl;
+        }
+        organization.setWebsite(websiteUrl);
+        organization.setAdress(request.getAdress());
+
+        organizationRepository.save(organization);
+
+        return savedUser;
     }
 }
