@@ -81,6 +81,11 @@ public class AuthService {
         LocalDate dataNasterii = LocalDate.parse(request.getBirthDate(), DateTimeFormatter.ISO_LOCAL_DATE);
         standardUser.setBirthDate(dataNasterii);
 
+        standardUser.setStandardUserRank("Seed");
+        standardUser.setTotalPoints(0);
+        standardUser.setTotalEventsJoined(0);
+        standardUser.setCanCreateEvents(false);
+
         standardUserRepository.save(standardUser);
 
         return savedUser;
