@@ -1,0 +1,10 @@
+torch
+torchvision
+geopy
+scikit-learn
+numpy
+matplotlib
+fastapi
+uvicorn[standard]
+python-multipart
+Pillow
