@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="12dp"
+    android:background="#FFFFFF"
+    android:layout_marginTop="10dp"
+    android:elevation="2dp">
+
+    <TextView
+        android:id="@+id/tv_history_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Titlu activitate"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:textColor="#222" />
+
+    <TextView
+        android:id="@+id/tv_history_date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Data"
+        android:textSize="13sp"
+        android:textColor="#777"
+        android:paddingTop="2dp" />
+
+    <TextView
+        android:id="@+id/tv_history_points"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="+50 Puncte"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:textColor="#4CAF50"
+        android:paddingTop="4dp" />
+
+</LinearLayout>

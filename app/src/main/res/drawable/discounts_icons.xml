@@ -1,0 +1,41 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="128dp"
+    android:height="128dp"
+    android:viewportWidth="100"
+    android:viewportHeight="100">
+
+    <!-- BIO -->
+    <path
+        android:fillColor="#4CAF50"
+        android:translateX="5"
+        android:translateY="5"
+        android:pathData="M12,2L2,18h20L12,2z"/>
+
+    <!-- TECH -->
+    <path
+        android:fillColor="#3F51B5"
+        android:translateX="5"
+        android:translateY="35"
+        android:pathData="M7,3v2h10V3H7zM5,7v12c0,1 1,2 2,2h10c1,0 2,-1 2,-2V7H5z"/>
+
+    <!-- FASHION -->
+    <path
+        android:fillColor="#E91E63"
+        android:translateX="55"
+        android:translateY="5"
+        android:pathData="M12,3l4,4h-3v7h-2V7H8l4,-4zM5,21v-2h14v2z"/>
+
+    <!-- HOME -->
+    <path
+        android:fillColor="#795548"
+        android:translateX="55"
+        android:translateY="35"
+        android:pathData="M12,3L2,12h3v8h6v-6h2v6h6v-8h3L12,3z"/>
+
+    <!-- BOOK -->
+    <path
+        android:fillColor="#9C27B0"
+        android:translateX="30"
+        android:translateY="60"
+        android:pathData="M18,2H6C4.9,2 4,3 4,4v16c0,1 1,2 2,2h12v-2H6V4h12v5h2V4C20,3 19,2 18,2z"/>
+</vector>
