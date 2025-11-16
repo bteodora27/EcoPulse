@@ -3,6 +3,7 @@ package com.example.Beckend_EcoPulse.controllers;
 import com.example.Beckend_EcoPulse.models.User;
 import com.example.Beckend_EcoPulse.requests.LoginRequest;
 import com.example.Beckend_EcoPulse.requests.SignUpRequest;
+import com.example.Beckend_EcoPulse.requests.UserProfileDTO;
 import com.example.Beckend_EcoPulse.services.AuthService; // NOU: Importă serviciul
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -68,6 +69,18 @@ public class AuthController {
         } catch (RuntimeException e) {
             // Prinde erorile (ex: "Email în uz")
             return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+    @GetMapping("/{userId}/profile")
+    public ResponseEntity<?> getProfileDetails(@PathVariable Long userId) {
+        try {
+            // Apelează logica din serviciu
+            UserProfileDTO profile = authService.getStandardUserProfile(userId);
+            return ResponseEntity.ok(profile);
+
+        } catch (RuntimeException e) {
+            // Prinde eroarea dacă user-ul sau profilul nu există
+            return ResponseEntity.status(404).body(e.getMessage());
         }
     }
 }

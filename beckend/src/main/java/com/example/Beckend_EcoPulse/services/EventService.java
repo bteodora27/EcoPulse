@@ -2,14 +2,19 @@ package com.example.Beckend_EcoPulse.services;
 
 import com.example.Beckend_EcoPulse.models.*;
 import com.example.Beckend_EcoPulse.repositories.*;
+import com.example.Beckend_EcoPulse.requests.EventResponseDTO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import com.example.Beckend_EcoPulse.requests.EventRequest; // <-- IMPORT NOU
 import java.time.LocalDateTime;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class EventService {
@@ -133,5 +138,62 @@ public class EventService {
 
         // 3. Salvează în baza de date
         return eventRepository.save(newEvent);
+    }
+    @Transactional
+    @Scheduled(fixedRate = 60000) // Rulează la fiecare 60 de secunde
+    public void finalizeExpiredEvents() {
+
+        System.out.println(">>> RULARE TASK PROGRAMAT: Se verifică evenimentele expirate...");
+
+        // 1. Găsește evenimentele care s-au terminat dar încă apar ca "ongoing"
+        List<Event> expiredEvents = eventRepository.findByStatusAndEndTimeBefore("ongoing", LocalDateTime.now());
+
+        if (expiredEvents.isEmpty()) {
+            System.out.println(">>> TASK: Nu s-au găsit evenimente de finalizat.");
+            return; // Nu avem ce face, ieșim
+        }
+
+        List<StandardUser> profilesToUpdate = new ArrayList<>();
+
+        for (Event event : expiredEvents) {
+
+            // 2. Marchează evenimentul ca finalizat
+            event.setStatus("completed");
+            System.out.println(">>> TASK: Se finalizează Evenimentul ID: " + event.getId());
+
+            // 3. Calculează bonusul organizatorului (5%)
+            Integer totalPoints = event.getTotalPoints();
+            int bonusPoints = (int) Math.round(totalPoints * 0.05);
+
+            if (bonusPoints > 0) {
+                // 4. Găsește organizatorul
+                Long creatorId = event.getCreator().getId();
+                StandardUser creatorProfile = standardUserRepository.findById(creatorId).orElse(null);
+
+                if (creatorProfile != null) {
+                    // 5. Adaugă punctele bonus la profilul organizatorului
+                    creatorProfile.setTotalPoints(creatorProfile.getTotalPoints() + bonusPoints);
+                    cleaningService.updateUserRank(creatorProfile); // Actualizează rangul
+                    profilesToUpdate.add(creatorProfile); // Adaugă la lista pentru salvare
+
+                    System.out.println(">>> TASK: S-au acordat " + bonusPoints + " puncte bonus Organizatorului ID: " + creatorId);
+                }
+            }
+        }
+
+        // 6. Salvează toate modificările (în masă, e mai eficient)
+        eventRepository.saveAll(expiredEvents);
+        standardUserRepository.saveAll(profilesToUpdate);
+    }
+
+    public List<EventResponseDTO> getAllEvents() {
+
+        // 1. Găsește toate entitățile Event
+        List<Event> events = eventRepository.findAll();
+
+        // 2. Transformă (map) fiecare Event într-un EventResponseDTO
+        return events.stream()
+                .map(event -> new EventResponseDTO(event))
+                .collect(Collectors.toList());
     }
 }

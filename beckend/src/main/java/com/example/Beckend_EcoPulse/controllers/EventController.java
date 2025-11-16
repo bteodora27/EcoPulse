@@ -2,12 +2,14 @@ package com.example.Beckend_EcoPulse.controllers;
 
 import com.example.Beckend_EcoPulse.models.Event;
 import com.example.Beckend_EcoPulse.requests.EventRequest;
+import com.example.Beckend_EcoPulse.requests.EventResponseDTO;
 import com.example.Beckend_EcoPulse.services.EventService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -19,9 +21,10 @@ public class EventController {
 
     // Endpoint pentru a vedea lista de evenimente (simulare)
     @GetMapping("/")
-    public ResponseEntity<?> getAllEvents() {
-        // TODO: Aici ar trebui să returnezi o listă de Evenimente din DB
-        return ResponseEntity.ok("Acest endpoint va returna lista evenimentelor.");
+    public ResponseEntity<List<EventResponseDTO>> getAllEvents() {
+        // Acum returnează lista de DTO-uri din serviciu
+        List<EventResponseDTO> events = eventService.getAllEvents();
+        return ResponseEntity.ok(events);
     }
 
     // Endpoint pentru ca un utilizator să se înscrie la eveniment

@@ -11,6 +11,7 @@ import com.example.Beckend_EcoPulse.repositories.UserSessionRepository;
 import com.example.Beckend_EcoPulse.requests.LoginRequest;
 import com.example.Beckend_EcoPulse.requests.OrganizationSignUpRequest;
 import com.example.Beckend_EcoPulse.requests.SignUpRequest;
+import com.example.Beckend_EcoPulse.requests.UserProfileDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -162,5 +163,19 @@ public class AuthService {
         organizationRepository.save(organization);
 
         return savedUser;
+    }
+    @Transactional(readOnly = true) // readOnly = true (pentru că doar citim)
+    public UserProfileDTO getStandardUserProfile(Long userId) {
+
+        // 1. Găsește utilizatorul de bază
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
+
+        // 2. Găsește profilul extins
+        StandardUser profile = standardUserRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("StandardUser profile not found for id: " + userId));
+
+        // 3. Combină-le și returnează DTO-ul
+        return new UserProfileDTO(user, profile);
     }
 }
