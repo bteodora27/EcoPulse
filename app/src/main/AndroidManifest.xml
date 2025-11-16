@@ -1,77 +1,73 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <!-- PERMISIUNI -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
-    <!-- 🔥 PERMISII NECESARE -->
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.CAMERA" />
-
-    <!-- 📸 Galerie & imagini -->
-    <!-- Android 13+ -->
+    <!-- Galerie & imagini -->
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
-
-    <!-- Android 12 și mai jos -->
     <uses-permission
         android:name="android.permission.READ_EXTERNAL_STORAGE"
         android:maxSdkVersion="32" />
 
-    <!-- Nu forțăm camera fizică (evită warning) -->
+    <!-- Cameră (opțională) -->
     <uses-feature
         android:name="android.hardware.camera"
         android:required="false" />
 
-
     <application
         android:allowBackup="true"
-        android:dataExtractionRules="@xml/data_extraction_rules"
-        android:fullBackupContent="@xml/backup_rules"
-        android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:icon="@mipmap/ic_launcher"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.EcoPulse"
-        tools:targetApi="31"
         android:usesCleartextTraffic="true">
 
-        <!-- 📂 FILE PROVIDER (NECESAR CAMERA + UPLOAD IMAGINI) -->
-        <provider
-            android:name="androidx.core.content.FileProvider"
-            android:authorities="${applicationId}.provider"
-            android:exported="false"
-            android:grantUriPermissions="true">
-            <meta-data
-                android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/file_paths" />
-        </provider>
-
+        <!-- SPLASH - launcher -->
         <activity
             android:name=".splash.SplashActivity"
             android:exported="true"
             android:theme="@style/Theme.AppCompat.NoActionBar">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
 
+        <!-- LOGIN -->
         <activity
             android:name=".auth.LoginActivity"
             android:exported="false" />
 
+        <!-- REGISTER (dacă îl ai) -->
+        <activity
+            android:name=".auth.SignUpActivity"
+            android:exported="false" />
+
+        <!-- MAIN SCREEN -->
         <activity
             android:name=".main.MainActivity"
             android:exported="false" />
 
+        <!-- EVENT DETAILS -->
+        <activity
+            android:name=".events.EventDetailsActivity"
+            android:exported="false" />
+
+        <!-- AUTUMN PROMO SCREEN -->
+        <activity
+            android:name=".events.AutumnPromoActivity"
+            android:exported="false" />
+
+        <!-- MAPS API KEY -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyCQVvIMnb30QFZum4y7iaPC6MJpEOkkmNk" /> <activity
-        android:name=".profile.UploadActivity"
-        android:exported="false" />
+            android:value="AIzaSyCQVvIMnb30QFZum4y7iaPC6MJpEOkkmNk"/>
 
+        <!-- FILE PROVIDER (pentru poze / profil) -->
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.provider"

@@ -1,88 +1,58 @@
-<?xml version="1.0" encoding="utf-8"?>
-<androidx.core.widget.NestedScrollView
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:fillViewport="true"
-    tools:context=".events.EventsFragment">
+    android:layout_height="match_parent">
 
-    <LinearLayout
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/card_autumn"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_height="150dp"
+        android:layout_margin="16dp"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="4dp"
+        app:strokeColor="@color/eco_green"
+        app:strokeWidth="2dp">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Community Events"
-            android:textSize="24sp"
-            android:textStyle="bold"
-            android:textColor="@color/text_primary"
-            android:layout_margin="16dp"/>
+        <ImageView
+            android:id="@+id/img_autumn_banner"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:src="@drawable/autumn_banner"
+            android:scaleType="centerCrop"/>
 
-        <com.google.android.material.tabs.TabLayout
-            android:id="@+id/events_tab_layout"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@android:color/transparent"
-            app:tabIndicatorColor="@color/eco_green"
-            app:tabSelectedTextColor="@color/eco_green"
-            app:tabTextColor="@color/text_secondary">
+            android:layout_gravity="bottom"
+            android:orientation="vertical"
+            android:padding="16dp"
+            android:background="#80000000">
 
-            <com.google.android.material.tabs.TabItem
+            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Upcoming Events" />
+                android:text="Autumn Cleanup!"
+                android:textColor="@android:color/white"
+                android:textSize="20sp"
+                android:textStyle="bold"/>
 
-            <com.google.android.material.tabs.TabItem
+            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="My Events" />
-        </com.google.android.material.tabs.TabLayout>
+                android:text="Win EcoPulse prizes."
+                android:textColor="@android:color/white"
+                android:textSize="14sp"/>
+        </LinearLayout>
 
-        <com.google.android.material.card.MaterialCardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            app:cardCornerRadius="16dp">
+    </com.google.android.material.card.MaterialCardView>
 
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="180dp"
-                android:background="@drawable/ic_launcher_background"> <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="16dp"
-                android:layout_alignParentBottom="true"
-                android:background="#80000000">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Autumn Cleanup!"
-                    android:textColor="@android:color/white"
-                    android:textSize="20sp"
-                    android:textStyle="bold"/>
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Win EcoPulse prizes."
-                    android:textColor="@android:color/white"
-                    android:textSize="14sp"/>
-            </LinearLayout>
-            </RelativeLayout>
-        </com.google.android.material.card.MaterialCardView>
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_events"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"/>
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recycler_view_events"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingBottom="16dp"
-            tools:listitem="@layout/item_event"
-            tools:itemCount="3"/>
-
-    </LinearLayout>
-</androidx.core.widget.NestedScrollView>
+</LinearLayout>

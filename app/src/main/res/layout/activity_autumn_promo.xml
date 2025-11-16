@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar_autumn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/eco_green"
+        app:title="Autumn Cleanup"
+        app:titleTextColor="@android:color/white"
+        app:navigationIcon="@drawable/ic_back_arrow" />
+
+    <ImageView
+        android:id="@+id/img_autumn"
+        android:layout_width="match_parent"
+        android:layout_height="220dp"
+        android:src="@drawable/autumn_promo_bg"
+        android:scaleType="centerCrop"
+        android:background="@drawable/rounded_green_border"
+        android:padding="4dp" />
+
+    <TextView
+        android:id="@+id/tv_autumn_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Join the Autumn Cleanup!"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:layout_margin="16dp"
+        android:textColor="@color/text_primary"/>
+
+    <TextView
+        android:id="@+id/tv_autumn_details"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Strânge gunoaie până la finalul toamnei și câștigă premii EcoPulse!"
+        android:textSize="16sp"
+        android:layout_marginHorizontal="16dp"
+        android:textColor="@color/text_secondary" />
+
+    <TextView
+        android:id="@+id/tv_autumn_bonus"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Convinge 3 prieteni să participe și primiți împreună recompense extra! 🍁"
+        android:textSize="16sp"
+        android:layout_margin="16dp"
+        android:textColor="@color/eco_green_dark"
+        android:textStyle="italic" />
+
+    <Button
+        android:id="@+id/btn_join_autumn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Join Autumn Cleanup"
+        android:layout_marginTop="16dp"
+        android:layout_marginHorizontal="16dp"
+        android:backgroundTint="@color/eco_green"
+        android:textColor="@android:color/white"
+        android:padding="12dp"
+        android:textStyle="bold" />
+
+</LinearLayout>
