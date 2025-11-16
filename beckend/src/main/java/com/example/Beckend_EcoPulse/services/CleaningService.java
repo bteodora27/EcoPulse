@@ -127,7 +127,7 @@ public class CleaningService {
     }
 
     // --- METODA 3: ACTUALIZARE RANG (Helper) ---
-    private void updateUserRank(StandardUser profile) {
+    void updateUserRank(StandardUser profile) {
         int points = profile.getTotalPoints();
 
         if (points >= 500) {

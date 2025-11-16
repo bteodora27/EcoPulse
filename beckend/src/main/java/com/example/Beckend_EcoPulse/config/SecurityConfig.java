@@ -33,6 +33,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/analyze-image").permitAll()
                         .requestMatchers("/api/v1/analyze-second-ai").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/cleaning/**").permitAll()
+                        .requestMatchers("/api/v1/events/**").permitAll()
                         .anyRequest().authenticated()
                 )
 

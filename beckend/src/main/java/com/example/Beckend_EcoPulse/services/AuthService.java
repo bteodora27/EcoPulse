@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -85,7 +86,7 @@ public class AuthService {
     }
 
     @Transactional
-    public String loginUser(LoginRequest loginRequest) {
+    public Map<String, Object> loginUser(LoginRequest loginRequest) {
 
         // 1. Găsește user-ul după email
         Optional<User> userOptional = userRepository.findByEmail(loginRequest.getEmail());
@@ -100,24 +101,23 @@ public class AuthService {
         }
 
         // 3. Creează Token-uri
-        // (Folosim UUID-uri simple, deoarece "inteligența" stă în baza de date)
         String accessToken = UUID.randomUUID().toString();
-        String refreshToken = UUID.randomUUID().toString(); // Pentru reînnoire
+        String refreshToken = UUID.randomUUID().toString();
 
         // 4. Creează și Salvează Sesiunea
         UserSession session = new UserSession();
-        session.setUser(user); // Setează legătura (cheia străină userID)
+        session.setUser(user); // Setează legătura
         session.setAccessToken(accessToken);
         session.setRefreshToken(refreshToken);
-        session.setExpiresAt(LocalDateTime.now().plusHours(8)); // Setează expirarea (ex: 8 ore)
-        // (createdAt se pune automat de @CreationTimestamp)
-
-        // TODO: Poți adăuga ipAddress și deviceInfo dacă le primești de la Android
+        session.setExpiresAt(LocalDateTime.now().plusHours(8));
 
         userSessionRepository.save(session);
 
-        // 5. Returnează doar Access Token-ul
-        return accessToken;
+        // 5. NOU: Returnează un Map care include AMBELE valori
+        return Map.of(
+                "accessToken", accessToken,
+                "userId", user.getId() // Trimite ID-ul utilizatorului
+        );
     }
     @Transactional
     public User registerOrganization(OrganizationSignUpRequest request) {

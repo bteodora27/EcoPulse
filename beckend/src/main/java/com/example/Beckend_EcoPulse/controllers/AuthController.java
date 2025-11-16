@@ -40,22 +40,20 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@RequestBody LoginRequest loginRequest) {
         try {
-            // Apelează noua logică de login din serviciu
-            String accessToken = authService.loginUser(loginRequest);
+            // 1. Primește Map-ul cu token-ul și ID-ul
+            Map<String, Object> loginData = authService.loginUser(loginRequest);
 
-            // Returnează token-ul către Android
+            // 2. Returnează JSON-ul final pentru Android
             return ResponseEntity.ok(Map.of(
                     "message", "Autentificare reușită!",
-                    "accessToken", accessToken
+                    "accessToken", (String) loginData.get("accessToken"),
+                    // Converteste ID-ul la String (pentru siguranța JSON)
+                    "userId", loginData.get("userId").toString()
             ));
 
         } catch (RuntimeException e) {
-            // Prinde erorile (ex: "Credentiale invalide")
             return ResponseEntity.status(401).body(e.getMessage());
         }
-
-        // ... (Metoda ta de /login rămâne (în mare parte) la fel) ...
-        // (Deși ar fi bine să muți și logica de login tot în AuthService)
     }
     @PostMapping("/signup-organization")
     public ResponseEntity<?> registerOrganization(@RequestBody OrganizationSignUpRequest request) {

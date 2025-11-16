@@ -1,5 +1,7 @@
 package com.example.Beckend_EcoPulse.controllers;
 
+import com.example.Beckend_EcoPulse.models.CleaningSession;
+import com.example.Beckend_EcoPulse.requests.SessionStartResponseDTO;
 import com.example.Beckend_EcoPulse.services.CleaningService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -23,15 +25,23 @@ public class CleaningController {
     public ResponseEntity<?> startCleaningSession(
             @RequestParam("user_id") Long userId,
             @RequestParam("beforePhoto") MultipartFile beforePhoto,
-            @RequestParam("latitude") Double latitude,   // <-- NOU
-            @RequestParam("longitude") Double longitude) { // <-- NOU
+            @RequestParam("latitude") Double latitude,
+            @RequestParam("longitude") Double longitude) {
         try {
-            // Pasează toate datele la serviciu
-            Object session = cleaningService.startSession(
+            // 1. Apelează Serviciul (Serviciul returnează Entitatea JPA)
+            CleaningSession session = cleaningService.startSession(
                     userId, beforePhoto, latitude, longitude
             );
-            return ResponseEntity.status(201).body(session);
+
+            // 2. Mapează Entitatea JPA la DTO-ul de Răspuns (Filtrarea)
+            SessionStartResponseDTO dto = new SessionStartResponseDTO();
+            dto.setSessionId(session.getId());
+            dto.setUserId(session.getUser().getId());
+            // 3. Trimite DTO-ul filtrat (doar datele sigure și necesare)
+            return ResponseEntity.status(201).body(dto);
+
         } catch (Exception e) {
+            // 4. Returnează eroarea (dacă AI-ul sau logica eșuează)
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
     }
