@@ -3,6 +3,7 @@ package com.example.ecopulse.profile
 import android.Manifest
 import android.app.Activity
 import android.app.AlertDialog
+import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
@@ -20,6 +21,8 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import com.example.ecopulse.R
+import com.example.ecopulse.cleanup_session.ContinueCleanupActivity
+import com.example.ecopulse.cleanup_session.SessionStorage
 import com.example.ecopulse.network.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
@@ -34,21 +37,19 @@ class ProfileFragment : Fragment() {
 
     private lateinit var historyContainer: LinearLayout
     private lateinit var profileImage: ImageView
-    private lateinit var tempPhotoFile: File
+    private lateinit var activeSessionCard: View
+    private lateinit var btnContinue: View
+    private lateinit var tvActiveSessionTitle: TextView
 
-    private val userId = 1L // TODO: Ia acest ID din SharedPreferences după Login
+    private var userId: Long = -1L
 
-    // ---------- PERMISSION LAUNCHER ----------
+    // ---------- PERMISSIONS ----------
     private val permissionLauncher =
-        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { perms ->
-            val granted = perms[Manifest.permission.CAMERA] == true &&
-                    perms[Manifest.permission.READ_MEDIA_IMAGES] == true
-
-            if (!granted)
-                Log.e("PERMISSION", "Permissions denied.")
+        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) {
+            // no UI needed
         }
 
-    // ---------- GALLERY PICKER ----------
+    // ---------- GALLERY ----------
     private val galleryLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
@@ -58,18 +59,13 @@ class ProfileFragment : Fragment() {
             }
         }
 
-    // ---------- CAMERA LAUNCHER ----------
+    // ---------- CAMERA ----------
     private val cameraLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
-
-                val bitmap = result.data?.extras?.get("data") as? Bitmap
-                if (bitmap != null) {
-                    profileImage.setImageBitmap(bitmap)
-
-                    val uri = saveTempBitmap(bitmap)
-                    uploadProfilePicture(uri)
-                }
+                val bmp = result.data?.extras?.get("data") as? Bitmap ?: return@registerForActivityResult
+                profileImage.setImageBitmap(bmp)
+                uploadProfilePicture(saveTempBitmap(bmp))
             }
         }
 
@@ -79,9 +75,13 @@ class ProfileFragment : Fragment() {
         permissionLauncher.launch(
             arrayOf(
                 Manifest.permission.CAMERA,
-                Manifest.permission.READ_MEDIA_IMAGES // Consideră permisiunile noi pt Android 13+
+                Manifest.permission.READ_MEDIA_IMAGES
             )
         )
+
+        userId = requireContext()
+            .getSharedPreferences("EcoPulsePrefs", Context.MODE_PRIVATE)
+            .getLong("USER_ID", -1L)
     }
 
     override fun onCreateView(
@@ -92,17 +92,25 @@ class ProfileFragment : Fragment() {
         return inflater.inflate(R.layout.activity_profile, container, false)
     }
 
+    override fun onResume() {
+        super.onResume()
+        checkActiveSession()
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         historyContainer = view.findViewById(R.id.history_container)
         profileImage = view.findViewById(R.id.profile_image)
+        activeSessionCard = view.findViewById(R.id.active_session_card)
+        btnContinue = view.findViewById(R.id.btn_continue_activity)
+        tvActiveSessionTitle = view.findViewById(R.id.tv_active_session_title)
 
         loadUserProfile()
         loadUserActivities()
 
         profileImage.setOnClickListener {
-
-            val anim = AnimationUtils.loadAnimation(requireContext(), R.anim.profile_pulse)
-            profileImage.startAnimation(anim)
+            profileImage.startAnimation(
+                AnimationUtils.loadAnimation(requireContext(), R.anim.profile_pulse)
+            )
 
             profileImage.postDelayed({
                 showImagePickerDialog(
@@ -111,8 +119,38 @@ class ProfileFragment : Fragment() {
                 )
             }, 180)
         }
+
+        btnContinue.setOnClickListener {
+            val (sessionId, _) = SessionStorage.getSession(requireContext())
+
+            if (sessionId == -1L) {
+                return@setOnClickListener
+            }
+
+            val intent = Intent(requireContext(), ContinueCleanupActivity::class.java)
+            intent.putExtra("SESSION_ID", sessionId)
+            startActivity(intent)
+        }
     }
 
+    // -------------------
+    // ACTIVE SESSION UI
+    // -------------------
+    private fun checkActiveSession() {
+        val (sessionId, _) = SessionStorage.getSession(requireContext())
+
+        if (sessionId == -1L) {
+            activeSessionCard.visibility = View.GONE
+        } else {
+            activeSessionCard.visibility = View.VISIBLE
+            tvActiveSessionTitle.text = "Curățenie în desfășurare"
+        }
+    }
+
+
+    // -------------------
+    // PROFILE IMAGE UPLOAD
+    // -------------------
     private fun pickImageFromGallery() {
         val intent = Intent(Intent.ACTION_PICK)
         intent.type = "image/*"
@@ -126,10 +164,9 @@ class ProfileFragment : Fragment() {
 
     private fun saveTempBitmap(bitmap: Bitmap): Uri {
         val file = File(requireContext().cacheDir, "profile_temp.jpg")
-        val out = FileOutputStream(file)
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 90, out)
-        out.flush()
-        out.close()
+        FileOutputStream(file).use {
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 90, it)
+        }
 
         return FileProvider.getUriForFile(
             requireContext(),
@@ -139,11 +176,9 @@ class ProfileFragment : Fragment() {
     }
 
     private fun uploadProfilePicture(uri: Uri) {
-        // ▼▼▼ CORECTAT AICI ▼▼▼
-        val api = ApiClient.apiService
         val part = uriToMultipart(uri)
 
-        api.uploadProfilePicture(userId, part)
+        ApiClient.apiService.uploadProfilePicture(userId, part)
             .enqueue(object : Callback<ApiResponse> {
                 override fun onResponse(call: Call<ApiResponse>, response: Response<ApiResponse>) {
                     Log.d("UPLOAD", "SUCCESS: ${response.body()?.message}")
@@ -156,21 +191,22 @@ class ProfileFragment : Fragment() {
     }
 
     private fun uriToMultipart(uri: Uri): MultipartBody.Part {
-        val input = requireContext().contentResolver.openInputStream(uri)
-        val bytes = input?.readBytes() ?: ByteArray(0)
+        val bytes = requireContext().contentResolver.openInputStream(uri)?.readBytes()
+            ?: ByteArray(0)
 
         val body = bytes.toRequestBody("image/*".toMediaTypeOrNull())
         return MultipartBody.Part.createFormData("file", "profile.jpg", body)
     }
 
-
+    // -------------------
+    // PROFILE API
+    // -------------------
     private fun loadUserProfile() {
-        // ▼▼▼ CORECTAT AICI ▼▼▼
-        val api = ApiClient.apiService
-        api.getUserProfile(userId).enqueue(
+        if (userId == -1L) return
+
+        ApiClient.apiService.getUserProfile(userId).enqueue(
             object : Callback<UserProfile> {
                 override fun onResponse(call: Call<UserProfile>, res: Response<UserProfile>) {
-                    if (!res.isSuccessful) return
                     val p = res.body() ?: return
 
                     view?.findViewById<TextView>(R.id.tv_username)?.text =
@@ -191,18 +227,17 @@ class ProfileFragment : Fragment() {
     }
 
     private fun loadUserActivities() {
-        // ▼▼▼ CORECTAT AICI ▼▼▼
-        val api = ApiClient.apiService
-        api.getUserActivities(userId).enqueue(
+        if (userId == -1L) return
+
+        ApiClient.apiService.getUserActivities(userId).enqueue(
             object : Callback<List<UserActivityItem>> {
                 override fun onResponse(
                     call: Call<List<UserActivityItem>>,
                     res: Response<List<UserActivityItem>>
                 ) {
-                    if (!res.isSuccessful) return
-                    val list = res.body() ?: return
-                    historyContainer.removeAllViews()
+                    val list = res.body().orEmpty()
 
+                    historyContainer.removeAllViews()
                     list.forEach { addHistoryItem(it) }
                 }
 
@@ -227,22 +262,20 @@ class ProfileFragment : Fragment() {
         "seed" -> "Sămânță"
         "sprout" -> "Vlăstar"
         "sapling" -> "Mugure"
-        "green_agent" -> "Agentul Verde"
+        "green_agent" -> "Agent Verde"
         else -> "Necunoscut"
     }
 
     private fun showImagePickerDialog(onGallery: () -> Unit, onCamera: () -> Unit) {
-        val dialog = AlertDialog.Builder(requireContext())
+        AlertDialog.Builder(requireContext())
             .setTitle("Schimbă poza de profil")
             .setItems(arrayOf("Alege din galerie", "Fă poză", "Anulează")) { d, i ->
                 when (i) {
                     0 -> onGallery()
                     1 -> onCamera()
-                    2 -> d.dismiss()
+                    else -> d.dismiss()
                 }
             }
-            .create()
-
-        dialog.show()
+            .show()
     }
 }

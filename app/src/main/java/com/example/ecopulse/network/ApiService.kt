@@ -56,5 +56,14 @@ interface ApiService {
         @Part("longitude") longitude: RequestBody
     ): Call<StartCleanupResponse>
 
+    @Multipart
+    @POST("api/v1/cleaning/{sessionId}/end")
+    fun endCleaningSession(
+        @Path("sessionId") sessionId: Long,
+        @Part bagsPhoto: MultipartBody.Part,
+        @Part afterPhoto: MultipartBody.Part
+    ): Call<ApiResponse>
+
+
 
 }

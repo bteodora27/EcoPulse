@@ -76,7 +76,7 @@
 
         <!-- MAP CLEANUP SESSION -->
         <activity
-            android:name=".cleanup_session.CleanupSessionActivity"
+            android:name=".cleanup_session.ContinueCleanupActivity"
             android:exported="false" />
 
         <!-- UPLOAD ACTIVITY -->

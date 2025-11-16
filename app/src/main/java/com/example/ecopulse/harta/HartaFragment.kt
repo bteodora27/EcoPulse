@@ -270,7 +270,13 @@ class HartaFragment : Fragment(), OnMapReadyCallback {
 
                 SessionStorage.saveSession(requireContext(), sessionId, newUserId)
 
-                openCleanupSession(sessionId)
+                requireActivity().runOnUiThread {
+                    Toast.makeText(requireContext(), "Curățenie începută!", Toast.LENGTH_SHORT).show()
+
+                    SessionStorage.saveSession(requireContext(), sessionId, userId)
+
+                    (activity as? MainActivity)?.goToProfile()
+                }
             }
 
             override fun onFailure(call: Call<StartCleanupResponse>, t: Throwable) {
@@ -279,15 +285,19 @@ class HartaFragment : Fragment(), OnMapReadyCallback {
         })
     }
 
-
-    private fun openCleanupSession(sessionId: Long) {
-        val intent = Intent(requireContext(), CleanupSessionActivity::class.java)
-        intent.putExtra("SESSION_ID", sessionId)
-        startActivity(intent)
-
-        bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
-        selectedPin = null
+    private fun goToProfile() {
+        val main = requireActivity() as MainActivity
+        main.goToProfile()
     }
+
+//    private fun openCleanupSession(sessionId: Long) {
+//        val intent = Intent(requireContext(), CleanupSessionActivity::class.java)
+//        intent.putExtra("SESSION_ID", sessionId)
+//        startActivity(intent)
+//
+//        bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
+//        selectedPin = null
+//    }
 
 
     @SuppressLint("MissingPermission")

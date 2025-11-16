@@ -22,13 +22,15 @@ class MainActivity : AppCompatActivity() {
 
     // Mutat referința la FAB în clasa, pentru acces public
     private lateinit var fabCreateEvent: FloatingActionButton
+    //
+    private lateinit var bottomNavView: BottomNavigationView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         supportActionBar?.hide()
 
-        val bottomNavView = findViewById<BottomNavigationView>(R.id.bottom_navigation_view)
+        bottomNavView = findViewById<BottomNavigationView>(R.id.bottom_navigation_view) // <-- ȘTERGE 'val'
         fabCreateEvent = findViewById<FloatingActionButton>(R.id.fab_create_event) // Inițializat
 
         if (savedInstanceState == null) {
@@ -91,4 +93,10 @@ class MainActivity : AppCompatActivity() {
             .replace(R.id.fragment_container, fragment)
             .commit()
     }
+
+    fun goToProfile() {
+        bottomNavView.selectedItemId = R.id.nav_profile
+    }
+
+
 }
