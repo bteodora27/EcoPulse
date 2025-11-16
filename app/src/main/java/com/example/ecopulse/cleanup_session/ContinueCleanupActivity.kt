@@ -1,6 +1,8 @@
 package com.example.ecopulse.cleanup_session
 
 import android.app.AlertDialog
+import android.content.Context
+import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
@@ -11,21 +13,24 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
 import com.example.ecopulse.R
 import com.example.ecopulse.network.ApiClient
-import com.example.ecopulse.network.ApiResponse
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.MultipartBody
-import okhttp3.RequestBody.Companion.toRequestBody
+import com.example.ecopulse.network.EndCleanupResponse
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.io.File
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.toRequestBody
+// ▼▼▼ LINIA ASTA LIPSEA SAU NU ERA CITITĂ CORECT ▼▼▼
+import android.widget.Toast
+// ▲▲▲ SFÂRȘIT ▲▲▲
 
 class ContinueCleanupActivity : AppCompatActivity() {
 
     private var bagsPhotoUri: Uri? = null
     private var afterPhotoUri: Uri? = null
     private var photoTarget: String? = null
-    private var latestTmpUri: Uri? = null // Stocăm URI-ul temporar pentru cameră
+    private var latestTmpUri: Uri? = null
 
     private var sessionId: Long = -1
 
@@ -33,9 +38,13 @@ class ContinueCleanupActivity : AppCompatActivity() {
     private lateinit var imgAfter: ImageView
     private lateinit var btnValidate: Button
 
+    private lateinit var sharedPreferences: SharedPreferences
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_continue_cleanup)
+
+        sharedPreferences = getSharedPreferences("EcoPulsePrefs", Context.MODE_PRIVATE)
 
         sessionId = intent.getLongExtra("SESSION_ID", -1)
         if (sessionId == -1L) {
@@ -53,6 +62,7 @@ class ContinueCleanupActivity : AppCompatActivity() {
 
         btnValidate.setOnClickListener {
             if (bagsPhotoUri == null || afterPhotoUri == null) {
+                // Acum 'Toast.LENGTH_SHORT' va fi găsit
                 Toast.makeText(this, "Încarcă ambele poze!", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
@@ -73,7 +83,7 @@ class ContinueCleanupActivity : AppCompatActivity() {
             .show()
     }
 
-    // --- GALLERY (Rămâne la fel) ---
+    // --- GALLERY ---
     private val galleryLauncher =
         registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
             if (uri != null) handleSelectedPhoto(uri)
@@ -83,30 +93,23 @@ class ContinueCleanupActivity : AppCompatActivity() {
         galleryLauncher.launch("image/*")
     }
 
-    // --- MODIFICAT: Launcher-ul pentru cameră ---
-    // Folosim TakePicture, care e de înaltă rezoluție și cere un URI
+    // --- CAMERA ---
     private val cameraLauncher =
         registerForActivityResult(ActivityResultContracts.TakePicture()) { success ->
             if (success) {
-                // Poza a fost salvată cu succes la 'latestTmpUri'
                 handleSelectedPhoto(latestTmpUri)
             } else {
                 Toast.makeText(this, "Fotografia a eșuat.", Toast.LENGTH_SHORT).show()
             }
         }
 
-    // --- MODIFICAT: Logica de deschidere a camerei ---
     private fun openCamera() {
-        // Creăm un URI nou unde camera să salveze poza
         latestTmpUri = getTmpFileUri()
         cameraLauncher.launch(latestTmpUri)
     }
 
-    // --- MODIFICAT: Nu mai avem nevoie de saveTempImage(bitmap) ---
-    // Funcția 'handleSelectedPhoto' gestionează ambele cazuri
     private fun handleSelectedPhoto(uri: Uri?) {
         if (uri == null) return
-
         when (photoTarget) {
             "bags" -> {
                 bagsPhotoUri = uri
@@ -119,20 +122,18 @@ class ContinueCleanupActivity : AppCompatActivity() {
         }
     }
 
-    // --- NOU: Funcție ajutătoare pentru a crea un fișier temporar ---
-    // (Folosește 'external-cache-path', pe care file_paths.xml îl permite)
     private fun getTmpFileUri(): Uri {
         val tmpFile = File.createTempFile("photo_${System.currentTimeMillis()}", ".png", externalCacheDir).apply {
             createNewFile()
         }
-
         return FileProvider.getUriForFile(
             applicationContext,
-            "${applicationContext.packageName}.provider", // Identic cu cel din Manifest
+            "${applicationContext.packageName}.provider",
             tmpFile
         )
     }
 
+    // --- Funcția uploadPhotos() ---
     private fun uploadPhotos() {
         val bags = uriToMultipart(bagsPhotoUri!!, "bagsPhoto")
         val after = uriToMultipart(afterPhotoUri!!, "afterPhoto")
@@ -142,21 +143,23 @@ class ContinueCleanupActivity : AppCompatActivity() {
             return
         }
 
-        // --- MODIFICAT: Numele funcției API ---
-        ApiClient.apiService.endCleaningSession(sessionId, bags, after) // 'endCleaningSession'
-            .enqueue(object : Callback<ApiResponse> {
-                override fun onResponse(call: Call<ApiResponse>, response: Response<ApiResponse>) {
+        ApiClient.apiService.endCleaningSession(sessionId, bags, after)
+            .enqueue(object : Callback<EndCleanupResponse> {
+                override fun onResponse(call: Call<EndCleanupResponse>, response: Response<EndCleanupResponse>) {
                     if (response.isSuccessful) {
-                        Toast.makeText(
-                            this@ContinueCleanupActivity,
-                            "Activitate finalizată! Se procesează...",
-                            Toast.LENGTH_LONG
-                        ).show()
-
-                        // TODO: Probabil vrei să ștergi 'SessionStorage' aici, dacă e cazul
-                        // SessionStorage.clearSession(this@ContinueCleanupActivity)
-
-                        finish() // Închide ecranul
+                        val body = response.body()
+                        if (body != null) {
+                            Toast.makeText(
+                                this@ContinueCleanupActivity,
+                                "${body.message} Ai primit ${body.pointsGained} puncte!",
+                                Toast.LENGTH_LONG
+                            ).show()
+                            saveNewProfileStats(body.newTotalPoints, body.newRank)
+                            SessionStorage.clearSession(this@ContinueCleanupActivity)
+                            finish()
+                        } else {
+                            Toast.makeText(this@ContinueCleanupActivity, "Răspuns invalid de la server.", Toast.LENGTH_SHORT).show()
+                        }
                     } else {
                         Toast.makeText(
                             this@ContinueCleanupActivity,
@@ -167,7 +170,7 @@ class ContinueCleanupActivity : AppCompatActivity() {
                     }
                 }
 
-                override fun onFailure(call: Call<ApiResponse>, t: Throwable) {
+                override fun onFailure(call: Call<EndCleanupResponse>, t: Throwable) {
                     Toast.makeText(
                         this@ContinueCleanupActivity,
                         "Eroare rețea: ${t.message}",
@@ -183,12 +186,19 @@ class ContinueCleanupActivity : AppCompatActivity() {
             val input = contentResolver.openInputStream(uri)
             val bytes = input?.readBytes() ?: ByteArray(0)
             input?.close()
-
             val body = bytes.toRequestBody("image/*".toMediaTypeOrNull())
             MultipartBody.Part.createFormData(name, "$name.jpg", body)
         } catch (e: Exception) {
             Log.e("URI_PARSE_FAIL", "Eroare la citirea fișierului URI: ${e.message}")
             null
         }
+    }
+
+    private fun saveNewProfileStats(totalPoints: Int, rank: String) {
+        val editor = sharedPreferences.edit()
+        editor.putInt("USER_POINTS", totalPoints)
+        editor.putString("USER_RANK", rank)
+        editor.apply()
+        Log.d("PROFILE_UPDATE", "Statistici salvate: Puncte=$totalPoints, Rang=$rank")
     }
 }

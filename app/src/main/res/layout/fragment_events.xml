@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -8,51 +9,50 @@
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/card_autumn"
         android:layout_width="match_parent"
-        android:layout_height="150dp"
-        android:layout_margin="16dp"
-
-        app:cardElevation="4dp"
+        android:layout_height="180dp" android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginBottom="8dp" app:cardElevation="4dp"
         app:strokeColor="@color/eco_green"
-        app:strokeWidth="2dp">
+        app:strokeWidth="2dp"
+        app:cardCornerRadius="8dp"> <ImageView
+        android:id="@+id/img_autumn_banner"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:src="@drawable/autumn_banner"
+        android:scaleType="centerCrop"
+        android:contentDescription="Autumn Cleanup Banner"/> <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_gravity="bottom"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="16dp" android:minHeight="80dp" android:background="#80000000"> <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Autumn Cleanup!"
+        android:textColor="@android:color/white"
+        android:textSize="22sp" android:textStyle="bold"/>
 
-        <ImageView
-            android:id="@+id/img_autumn_banner"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:src="@drawable/autumn_banner"
-            android:scaleType="centerCrop"/>
-
-        <RelativeLayout
-            android:layout_width="match_parent"
+        <TextView
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-            android:orientation="vertical"
-            android:padding="16dp"
-            android:background="#80000000">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Autumn Cleanup!"
-                android:textColor="@android:color/white"
-                android:textSize="20sp"
-                android:textStyle="bold"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Win EcoPulse prizes."
-                android:textColor="@android:color/white"
-                android:textSize="14sp"/>
-        </RelativeLayout>
+            android:text="Win EcoPulse prizes by joining our autumn events!"
+            android:textColor="@android:color/white"
+            android:textSize="14sp"/>
+    </LinearLayout>
 
     </com.google.android.material.card.MaterialCardView>
-
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_events"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"/>
+        android:layout_weight="1"
+        android:clipToPadding="false"
+        android:paddingTop="8dp"
+        android:paddingBottom="16dp"/>
 
 </LinearLayout>

@@ -9,6 +9,7 @@ import retrofit2.http.POST
 import retrofit2.http.Part
 import retrofit2.http.Path
 import okhttp3.RequestBody
+import retrofit2.http.Header
 
 
 interface ApiService {
@@ -29,10 +30,11 @@ interface ApiService {
     @POST("api/v1/auth/signup-organization")
     fun registerOrganization(@Body request: RegisterOrgRequest): Call<RegisterResponse>
 
+    // --- ACEASTA ESTE PENTRU PROFILE FRAGMENT ---
     @GET("api/v1/users/{userId}/profile")
     fun getUserProfile(
         @Path("userId") userId: Long
-    ): Call<UserProfile>
+    ): Call<UserProfile> // Folosește modelul UserProfile
 
     @GET("api/v1/users/{userId}/activities")
     fun getUserActivities(
@@ -46,7 +48,6 @@ interface ApiService {
         @Part file: MultipartBody.Part
     ): Call<ApiResponse>
 
-    // ▼▼▼ ADAUGĂ ACEASTĂ FUNCȚIE NOUĂ ▼▼▼ !!!!!!!!!!!!!!!!!!!!!!!!
     @Multipart
     @POST("api/v1/cleaning/start")
     fun startIndividualCleanup(
@@ -62,8 +63,15 @@ interface ApiService {
         @Path("sessionId") sessionId: Long,
         @Part bagsPhoto: MultipartBody.Part,
         @Part afterPhoto: MultipartBody.Part
-    ): Call<ApiResponse>
+    ): Call<EndCleanupResponse>
 
-
-
+    // --- ▼▼▼ MODIFICARE AICI ▼▼▼ ---
+    // AM REDENUMIT FUNCȚIA PENTRU LOGIN
+    // (și am șters duplicatul)
+    @GET("api/v1/auth/{userId}/profile")
+    fun getAuthProfile( // <-- NUME NOU
+        @Path("userId") userId: Long
+        // Am șters parametrul @Header("Authorization")
+    ): Call<UserProfileResponse> // Folosește UserProfileResponse
+    // --- ▲▲▲ SFÂRȘIT MODIFICARE ▲▲▲ ---
 }
