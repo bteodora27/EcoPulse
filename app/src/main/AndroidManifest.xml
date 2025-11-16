@@ -2,24 +2,25 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <!-- PERMISIUNI INTERNET -->
     <uses-permission android:name="android.permission.INTERNET" />
+
+    <!-- PERMISIUNI LOCAȚIE -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
-    <!-- 🔥 PERMISII NECESARE -->
-    <uses-permission android:name="android.permission.INTERNET" />
+    <!-- CAMERA -->
     <uses-permission android:name="android.permission.CAMERA" />
 
-    <!-- 📸 Galerie & imagini -->
-    <!-- Android 13+ -->
+    <!-- ANDROID 13+ -->
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
 
-    <!-- Android 12 și mai jos -->
+    <!-- ANDROID 12 și mai jos -->
     <uses-permission
         android:name="android.permission.READ_EXTERNAL_STORAGE"
         android:maxSdkVersion="32" />
 
-    <!-- Nu forțăm camera fizică (evită warning) -->
+    <!-- EVITĂM WARNING LA CAMERA FIZICĂ -->
     <uses-feature
         android:name="android.hardware.camera"
         android:required="false" />
@@ -27,17 +28,16 @@
 
     <application
         android:allowBackup="true"
-        android:dataExtractionRules="@xml/data_extraction_rules"
-        android:fullBackupContent="@xml/backup_rules"
+        tools:replace="allowBackup"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.EcoPulse"
-        tools:targetApi="31"
-        android:usesCleartextTraffic="true">
+        android:usesCleartextTraffic="true"
+        tools:targetApi="31">
 
-        <!-- 📂 FILE PROVIDER (NECESAR CAMERA + UPLOAD IMAGINI) -->
+        <!-- FILE PROVIDER (UNIC, CORECT) -->
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.provider"
@@ -48,6 +48,7 @@
                 android:resource="@xml/file_paths" />
         </provider>
 
+        <!-- SPLASH -->
         <activity
             android:name=".splash.SplashActivity"
             android:exported="true"
@@ -58,29 +59,35 @@
             </intent-filter>
         </activity>
 
+        <!-- LOGIN -->
         <activity
             android:name=".auth.LoginActivity"
             android:exported="false" />
 
+        <!-- REGISTER (dacă există) -->
+        <activity
+            android:name=".auth.SignUpActivity"
+            android:exported="false" />
+
+        <!-- MAIN -->
         <activity
             android:name=".main.MainActivity"
             android:exported="false" />
 
+        <!-- MAP CLEANUP SESSION -->
+        <activity
+            android:name=".cleanup_session.CleanupSessionActivity"
+            android:exported="false" />
+
+        <!-- UPLOAD ACTIVITY -->
+        <activity
+            android:name=".profile.UploadActivity"
+            android:exported="false" />
+
+        <!-- GOOGLE MAPS KEY -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyCQVvIMnb30QFZum4y7iaPC6MJpEOkkmNk" /> <activity
-        android:name=".profile.UploadActivity"
-        android:exported="false" />
-
-        <provider
-            android:name="androidx.core.content.FileProvider"
-            android:authorities="${applicationId}.provider"
-            android:exported="false"
-            android:grantUriPermissions="true">
-            <meta-data
-                android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/file_paths" />
-        </provider>
+            android:value="AIzaSyCQVvIMnb30QFZum4y7iaPC6MJpEOkkmNk" />
 
     </application>
 

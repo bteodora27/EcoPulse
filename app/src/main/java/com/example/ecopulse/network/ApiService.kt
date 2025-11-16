@@ -8,6 +8,8 @@ import retrofit2.http.Multipart
 import retrofit2.http.POST
 import retrofit2.http.Part
 import retrofit2.http.Path
+import okhttp3.RequestBody
+
 
 interface ApiService {
 
@@ -45,6 +47,14 @@ interface ApiService {
     ): Call<ApiResponse>
 
     // ▼▼▼ ADAUGĂ ACEASTĂ FUNCȚIE NOUĂ ▼▼▼ !!!!!!!!!!!!!!!!!!!!!!!!
-    @POST("api/v1/cleanup/start-individual") // Asigură-te că e endpoint-ul corect
-    fun startIndividualCleanup(@Body request: StartCleanupRequest): Call<StartCleanupResponse>
+    @Multipart
+    @POST("api/v1/cleaning/start")
+    fun startIndividualCleanup(
+        @Part("user_id") userId: RequestBody,
+        @Part beforePhoto: MultipartBody.Part,
+        @Part("latitude") latitude: RequestBody,
+        @Part("longitude") longitude: RequestBody
+    ): Call<StartCleanupResponse>
+
+
 }

@@ -1,7 +1,8 @@
 package com.example.ecopulse.network
 
-// JSON-ul pe care îl PRIMEȘTI înapoi
+import com.google.gson.annotations.SerializedName
+
 data class StartCleanupResponse(
-    val message: String,
-    val sessionId: Long // ID-ul sesiunii, pe care îl vom folosi mai târziu
+    val userId: Long,
+    val sessionId: Long
 )
