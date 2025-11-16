@@ -8,7 +8,7 @@ object SessionStorage {
         context.getSharedPreferences("EcoPulsePrefs", Context.MODE_PRIVATE)
             .edit()
             .putLong("SESSION_ID", sessionId)
-            .putLong("USER_ID", userId)
+            .putLong("USER_ID", userId) // Asta e OK, deși e redundant cu LoginActivity
             .apply()
     }
 
@@ -19,11 +19,13 @@ object SessionStorage {
         return Pair(sessionId, userId)
     }
 
+    // ▼▼▼ AICI ESTE CORECTURA ▼▼▼
     fun clearSession(context: Context) {
         context.getSharedPreferences("EcoPulsePrefs", Context.MODE_PRIVATE)
             .edit()
-            .remove("SESSION_ID")
-            .remove("USER_ID")
+            .remove("SESSION_ID") // Șterge DOAR sesiunea de curățenie
+            // Am șters: .remove("USER_ID")
             .apply()
     }
+    // ▲▲▲ SFÂRȘIT CORECTURĂ ▲▲▲
 }
