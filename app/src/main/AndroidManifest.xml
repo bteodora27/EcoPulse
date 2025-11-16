@@ -84,6 +84,21 @@
             android:name=".profile.UploadActivity"
             android:exported="false" />
 
+        <activity
+            android:name=".events.EventDetailsActivity"
+            android:exported="false" />
+
+        <!-- AUTUMN PROMO SCREEN -->
+        <activity
+            android:name=".events.AutumnPromoActivity"
+            android:exported="false" />
+
+        <!-- MAPS API KEY -->
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyCQVvIMnb30QFZum4y7iaPC6MJpEOkkmNk"/>
+
+
         <!-- GOOGLE MAPS KEY -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"

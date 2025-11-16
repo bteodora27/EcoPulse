@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar_event"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/eco_green"
+        app:title="Detalii eveniment"
+        app:titleTextColor="@android:color/white"
+        app:navigationIcon="@drawable/ic_back_arrow" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="16dp">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/img_event"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:scaleType="centerCrop"
+                android:background="#CCCCCC" />
+
+            <TextView
+                android:id="@+id/tv_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Titlu"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                android:layout_marginTop="16dp" />
+
+            <TextView
+                android:id="@+id/tv_details"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Detalii..."
+                android:textSize="15sp"
+                android:layout_marginTop="8dp" />
+
+            <Button
+                android:id="@+id/btn_join_event_details"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Join Event"
+                android:backgroundTint="@color/eco_green"
+                android:textColor="@android:color/white"
+                android:layout_marginTop="16dp" />
+
+            <Button
+                android:id="@+id/btn_open_maps"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Deschide în Maps"
+                android:layout_marginTop="16dp"
+                android:backgroundTint="@color/eco_green"
+                android:textColor="@android:color/white" />
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

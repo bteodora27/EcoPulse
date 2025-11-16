@@ -8,4 +8,7 @@
     <color name="text_secondary">#757575</color>
 
     <color name="text_input_dark_gray">#333333</color>
+
+    <color name="eco_green_dark">#2E7D32</color>
+    <color name="eco_green_light">#66BB6A</color>
 </resources>
